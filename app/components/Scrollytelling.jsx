@@ -7,6 +7,7 @@ import SecondSection from "./SecondSection";
 import Timeline from "./Timeline";
 import { useMemo } from "react";
 import { ScrollToPlugin } from "gsap/ScrollToPlugin";
+import HeaderCenterTitle from "./HeaderCenterTitle";
 
 gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 
@@ -180,7 +181,6 @@ const Scrollytelling = () => {
 
   ///Testi Animation
   const currentFrameRef = useRef(0);
-
   useEffect(() => {
     // Aggiorna il ref ogni volta che currentFrame cambia
     currentFrameRef.current = currentFrame;
@@ -223,18 +223,16 @@ const Scrollytelling = () => {
       if (scrollTimeout) clearTimeout(scrollTimeout);
       hideTitle();
 
-      const isMilestone0 =
-        currentFrameRef.current >= milestones[0] &&
-        currentFrameRef.current < milestones[1];
+      const isMilestone1 = currentFrameRef.current < milestones[1];
 
       console.log(
         "Current Frame:",
         currentFrameRef.current,
-        "Is Milestone 0:",
-        isMilestone0
+        "Is Milestone 1:",
+        isMilestone1
       );
 
-      if (isMilestone0) {
+      if (isMilestone1) {
         scrollTimeout = setTimeout(() => {
           resetTitle();
         }, 3000);
@@ -282,7 +280,7 @@ const Scrollytelling = () => {
         {/*TeamInfo*/}
         <div id="header-team-info" className="left-10" ref={headerTeamInfo}>
           <div className="team-item">
-            <p className="team-title">Vases by:</p>
+            <p className="team-title">Vases:</p>
             <p className="team-info">Sofia Petraglio</p>
           </div>
           <div className="team-item">
@@ -291,35 +289,12 @@ const Scrollytelling = () => {
             <p className="team-info">Alessandro Plantera</p>
           </div>
           <div className="team-item">
-            <p className="team-title">Visuals and Photo:</p>
+            <p className="team-title">Visual and Photography:</p>
             <p className="team-info">Sophie Sprugasci</p>
           </div>
           <p>SUDIO BLANDO collective</p>
         </div>
-        {/* Titolo centrale */}
-        <div
-          id="header-center-title"
-          ref={headerCenterTitleRef}
-          className="absolute inset-0 flex flex-col items-center justify-center text-center z-10"
-        >
-          <h2 id="header-main-title">(re)generative vases</h2>
-          <p id="header-subtitle" className="">
-            place-based <br />
-            design from waste
-            <br /> materials
-          </p>
-          <p id="header-year">2024®</p>
-          <p
-            id="header-scroll-text"
-            style={{
-              position: "absolute",
-              top: "66.6vh", // 2/3 dell'altezza della viewport
-              transform: "translateY(-50%)", // Centrare verticalmente
-            }}
-          >
-            scroll to explore more
-          </p>
-        </div>
+        <HeaderCenterTitle ref={headerCenterTitleRef} scrollTextTop="40vh" />
         <canvas
           ref={canvasRef}
           className="w-full h-auto will-change-transform block"
@@ -334,7 +309,7 @@ const Scrollytelling = () => {
         isVisible={showTimeline} // Passa lo stato di visibilità
       />
       {/* Seconda Sezione */}
-      <div ref={secondSectionRef} style={{ border: "2px solid red" }}>
+      <div ref={secondSectionRef}>
         <SecondSection />
       </div>
     </div>

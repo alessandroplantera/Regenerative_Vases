@@ -30,10 +30,13 @@ const Timeline = ({
     <div
       style={{
         position: "fixed",
-        right: "0",
-        top: "10%",
+        right: "1vw",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "flex-end",
+        top: "25vh",
         height: "80vh",
-        width: "60px",
+        width: "auto", // Aumenta lo spazio per il testo e il trattino
         zIndex: 1000,
         opacity: isVisible ? 1 : 0, // Opacità controllata
         pointerEvents: isVisible ? "auto" : "none", // Disattiva interazioni se non visibile
@@ -46,31 +49,33 @@ const Timeline = ({
         return (
           <div
             key={frameIndex}
-            className="flex flex-col items-center"
+            className="flex flex-row items-center" // Cambia a flex-row per layout orizzontale
             onClick={() => scrollToFrame(frameIndex)}
             style={{
               marginBottom: "8px",
             }}
           >
-            <div
-              style={{
-                width: isMilestone ? "16px" : "8px",
-                height: "2px",
-                backgroundColor: isActive ? "black" : "gray",
-                transition: "background-color 0.5s ease",
-              }}
-            />
             {isMilestone && (
               <div
                 style={{
                   fontSize: "10px",
-                  color: isActive ? "black" : "gray",
-                  marginTop: "4px",
+                  color: isActive ? "var(--blandoBlue)" : "gray",
+                  marginRight: "8px", // Spaziatura tra il testo e il trattino
+                  textAlign: "right",
                 }}
               >
                 {`Milestone ${milestones.indexOf(frameIndex) + 1}`}
               </div>
             )}
+            <div
+              style={{
+                flexShrink: 0, // Mantiene la dimensione fissa del trattino
+                width: isMilestone ? "50px" : "38px",
+                height: "2px",
+                backgroundColor: isActive ? "var(--blandoBlue)" : "gray",
+                transition: "background-color 0.5s ease",
+              }}
+            />
           </div>
         );
       })}

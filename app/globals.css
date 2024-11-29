@@ -22,7 +22,11 @@ header {
 }
 
 /* Stile per l'intero container in alto a sinistra */
-#header-top-left {
+#header-center-title {
+  left: 50%;
+  transform: translateX(-50%);
+  width: auto; /* Adatta la larghezza al contenuto */
+  padding: 20px; /* Aggiungi un padding coerente */
 }
 
 /* Stile per il logo */
