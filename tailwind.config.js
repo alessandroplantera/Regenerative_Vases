@@ -10,6 +10,14 @@ module.exports = {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
+        blandoBlue: "var(--blandoBlue)",
+      },
+      fontFamily: {
+        antique: "var(--font-antique)",
+        regular: "var(--font-regular)",
+        thin: "var(--font-thin)",
+        ppbold: "var(--font-ppbold)",
+        ppregular: "var(--font-ppregular)",
       },
     },
   },

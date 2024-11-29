@@ -17,6 +17,10 @@ const Scrollytelling = () => {
   const [currentFrame, setCurrentFrame] = useState(0); // Dichiarazione di currentFrame
   const secondSectionRef = useRef(null); // Riferimento alla seconda sezione
   const [showTimeline, setShowTimeline] = useState(true); // Stato per mostrare/nascondere la timeline
+  let [scrollTimeout, setScrollTimeout] = useState(null);
+  const headerCenterTitleRef = useRef(null);
+  const headerTeamInfo = useRef(null);
+  const headerMoreInfo = useRef(null);
 
   const totalFrames = 1547;
   const milestones = useMemo(
@@ -106,7 +110,7 @@ const Scrollytelling = () => {
 
     resizeCanvas();
     const isMobile = window.innerWidth <= 768;
-
+    //Timeline
     const scrollTriggerInstance = ScrollTrigger.create({
       trigger: headerRef.current,
       start: "top top",
@@ -127,10 +131,13 @@ const Scrollytelling = () => {
         ease: "power4.inOut",
       },
       onUpdate: (self) => {
+        console.log("Progress:", self.progress);
         const frameIndex = Math.floor(
           self.progress * (loadedImages.length - 1)
         );
         setCurrentFrame(frameIndex); // Aggiorna lo stato corrente
+        console.log("Loaded Images Length:", loadedImages.length);
+        console.log("Current Frame Index:", frameIndex);
 
         const image = loadedImages[frameIndex];
         if (image) {
@@ -151,7 +158,7 @@ const Scrollytelling = () => {
       window.removeEventListener("resize", handleResize);
       ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
     };
-  }, [loadedImages]);
+  }, [loadedImages, scrollTimeout]);
 
   // Mostra/Nascondi timeline in base alla visibilità della seconda sezione
   useEffect(() => {
@@ -164,11 +171,83 @@ const Scrollytelling = () => {
       trigger: secondSectionRef.current,
       start: `top+=${headerHeight} top`, // Calcola l'inizio rispetto all'altezza del header
       end: "top+=10% top", // Puoi regolare il valore per un comportamento diverso
-      markers: true, // Rimuovi dopo il debug
+      markers: false, // Rimuovi dopo il debug
       onEnter: () => setShowTimeline(false), // Nascondi la timeline
       onLeaveBack: () => setShowTimeline(true), // Mostra di nuovo la timeline
     });
   }, [secondSectionRef, headerRef]);
+  ///
+
+  ///Testi Animation
+  const currentFrameRef = useRef(0);
+
+  useEffect(() => {
+    // Aggiorna il ref ogni volta che currentFrame cambia
+    currentFrameRef.current = currentFrame;
+  }, [currentFrame]);
+
+  useEffect(() => {
+    // GSAP ScrollTrigger per il fade-out durante lo scroll
+    const hideTitle = () => {
+      gsap.to(
+        [
+          headerCenterTitleRef.current,
+          headerMoreInfo.current,
+          headerTeamInfo.current,
+        ],
+        {
+          opacity: 0,
+          duration: 1,
+          ease: "power4.out",
+        }
+      );
+    };
+
+    const resetTitle = () => {
+      gsap.to(
+        [
+          headerCenterTitleRef.current,
+          headerMoreInfo.current,
+          headerTeamInfo.current,
+        ],
+        {
+          opacity: 1,
+          duration: 1,
+          ease: "power4.out",
+        }
+      );
+    };
+
+    // Event listener per ripristinare il titolo dopo 3 secondi di inattività
+    const handleScroll = () => {
+      if (scrollTimeout) clearTimeout(scrollTimeout);
+      hideTitle();
+
+      const isMilestone0 =
+        currentFrameRef.current >= milestones[0] &&
+        currentFrameRef.current < milestones[1];
+
+      console.log(
+        "Current Frame:",
+        currentFrameRef.current,
+        "Is Milestone 0:",
+        isMilestone0
+      );
+
+      if (isMilestone0) {
+        scrollTimeout = setTimeout(() => {
+          resetTitle();
+        }, 3000);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, [headerCenterTitleRef, headerMoreInfo, headerTeamInfo, milestones]);
+
+  ///
 
   return (
     <div>
@@ -176,6 +255,71 @@ const Scrollytelling = () => {
         ref={headerRef}
         className="relative w-screen h-screen bg-gray-200 overflow-hidden"
       >
+        <img
+          id="header-logo"
+          src="/studioblando.svg"
+          alt="Studio Blando"
+          className="w-20 absolute top-5 left-10 space-y-4 z-10"
+        />
+        <div
+          id="header-top-left"
+          className="absolute top-20 left-10 space-y-4 z-10"
+          ref={headerMoreInfo}
+        >
+          {/* Logo e descrizione breve */}
+          <p id="header-description" className="space-y-10">
+            Interdisciplinary collaborative project of <br /> research, product
+            design, communication, and <br /> interaction curated by Studio
+            Blando.
+          </p>
+
+          {/* Contatti */}
+          <div id="header-contacts">
+            <p id="header-email">studioblando@gmail.com</p>
+            <p id="header-instagram">studio_blando</p>
+          </div>
+        </div>
+        {/*TeamInfo*/}
+        <div id="header-team-info" className="left-10" ref={headerTeamInfo}>
+          <div className="team-item">
+            <p className="team-title">Vases by:</p>
+            <p className="team-info">Sofia Petraglio</p>
+          </div>
+          <div className="team-item">
+            <p className="team-title">Visual and Interactive Design:</p>
+            <p className="team-info">Alice Mioni</p>
+            <p className="team-info">Alessandro Plantera</p>
+          </div>
+          <div className="team-item">
+            <p className="team-title">Visuals and Photo:</p>
+            <p className="team-info">Sophie Sprugasci</p>
+          </div>
+          <p>SUDIO BLANDO collective</p>
+        </div>
+        {/* Titolo centrale */}
+        <div
+          id="header-center-title"
+          ref={headerCenterTitleRef}
+          className="absolute inset-0 flex flex-col items-center justify-center text-center z-10"
+        >
+          <h2 id="header-main-title">(re)generative vases</h2>
+          <p id="header-subtitle" className="">
+            place-based <br />
+            design from waste
+            <br /> materials
+          </p>
+          <p id="header-year">2024®</p>
+          <p
+            id="header-scroll-text"
+            style={{
+              position: "absolute",
+              top: "66.6vh", // 2/3 dell'altezza della viewport
+              transform: "translateY(-50%)", // Centrare verticalmente
+            }}
+          >
+            scroll to explore more
+          </p>
+        </div>
         <canvas
           ref={canvasRef}
           className="w-full h-auto will-change-transform block"

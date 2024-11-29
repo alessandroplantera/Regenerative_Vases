@@ -2,24 +2,129 @@
 @tailwind components;
 @tailwind utilities;
 :root {
-    --background: #e5e5e5;
-    --foreground: #171717;
-  }
-  
-  body {
-    color: var(--foreground);
-    background: var(--background);
-    font-family: Arial, Helvetica, sans-serif;
-  }
-  
-header{
+  --background: #e5e5e5;
+  --foreground: #171717;
+  --blandoBlue: #001eff;
+  --font-antique: var(--font-s-antique), serif;
+  --font-regular: var(--font-regular), sans-serif;
+  --font-thin: var(--font-s-thin), sans-serif;
+  --font-ppbold: var(--font-pp-bold), sans-serif;
+  --font-ppregular: var(--font-pp-regular), sans-serif;
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+}
+
+header {
   height: 100dvh;
 }
 
+/* Stile per l'intero container in alto a sinistra */
+#header-top-left {
+}
+
+/* Stile per il logo */
+#header-logo {
+  width: 80px;
+}
+
+/* Stile per la descrizione */
+#header-description {
+  color: var(--blandoBlue); /* Blu brillante */
+  font-family: var(--font-regular);
+  word-wrap: break-word;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 107.53%; /* 19.355px */
+}
+
+/* Stile per i contatti */
+#header-contacts {
+  color: #555; /* Grigio scuro */
+  line-height: 1.5;
+}
+
+#header-email,
+#header-instagram {
+  transition: color 0.3s ease;
+  color: var(--blandoBlue);
+}
+
+/* Stile per il titolo centrale */
+#header-center-title {
+  background: none; /* Assicurati che lo sfondo sia trasparente */
+  color: var(--blandoBlue);
+}
+
+#header-main-title {
+  font-size: 45px;
+  font-family: var(--font-ppregular);
+  font-weight: 700;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 107.53%; /* 48.388px */
+}
+
+#header-subtitle {
+  text-align: center;
+  font-family: var(--font-regular);
+  font-size: 40px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 30px; /* 75% */
+  letter-spacing: -1.2px;
+}
+#header-year {
+  font-family: "PP Mondwest";
+  font-size: 40px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 107.53%; /* 43.012px */
+}
+/* Stile per il testo dello scroll */
+#header-scroll-text {
+  font-family: "Suisse BP Int'l";
+  font-size: 24.722px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 107.53%; /* 26.583px */
+  animation: blink 1s infinite;
+}
+
+#header-team-info {
+  font-size: 18px;
+  color: var(--blandoBlue);
+  z-index: 10;
+  font-style: normal;
+  position: absolute;
+  bottom: 10vh;
+  font-weight: 400;
+  line-height: 107.53%; /* 19.355px */
+}
+.team-item {
+  margin-bottom: 1rem;
+}
+.team-title {
+}
+.team-info {
+}
+
+/* Animazione per il testo dello scroll */
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
   }
 }
-
