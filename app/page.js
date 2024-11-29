@@ -1,5 +1,6 @@
 import Head from "next/head";
 import Scrollytelling from "./components/Scrollytelling";
+import "./globals.css";
 
 export default function Home() {
   return (
