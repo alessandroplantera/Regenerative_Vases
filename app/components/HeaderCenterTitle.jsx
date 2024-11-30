@@ -36,5 +36,5 @@ const HeaderCenterTitle = forwardRef(
     </div>
   )
 );
-
+HeaderCenterTitle.displayName = "HeaderCenterTitle";
 export default HeaderCenterTitle;
