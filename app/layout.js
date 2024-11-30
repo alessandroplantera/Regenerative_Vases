@@ -25,7 +25,7 @@ const ppregular = localFont({
 
 export const metadata = {
   title: "Studio Blando",
-  description: "Pagina interattiva con design innovativo.",
+  description: "Regenerative design from waste materials",
 };
 
 export default function RootLayout({ children }) {
