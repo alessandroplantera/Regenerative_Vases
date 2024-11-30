@@ -8,6 +8,7 @@ import Timeline from "./Timeline";
 import { useMemo } from "react";
 import { ScrollToPlugin } from "gsap/ScrollToPlugin";
 import HeaderCenterTitle from "./HeaderCenterTitle";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 
@@ -271,6 +272,8 @@ const Scrollytelling = () => {
 
   return (
     <div>
+      {children}
+      <SpeedInsights />
       <header
         ref={headerRef}
         className="relative w-screen h-screen bg-gray-200 overflow-hidden"
