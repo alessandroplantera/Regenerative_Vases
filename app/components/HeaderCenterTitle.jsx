@@ -5,10 +5,11 @@ const HeaderCenterTitle = forwardRef(
   (
     {
       showScrollText = true,
-      scrollTextTop = "66.6vh", // Valore di default
+      titleVPosition = "66.6vh", // Valore di default
       title = "(re)generative vases",
-      subtitle = "place-based design",
-      subsubtitle = "from waste materials",
+      subtitle = "place-based",
+      subsubtitle = " design from waste",
+      subsubsubtitle = "materials",
       year = "2024®",
     },
     ref
@@ -18,13 +19,14 @@ const HeaderCenterTitle = forwardRef(
       ref={ref}
       className="absolute flex flex-col items-center justify-center text-center z-10"
       style={{
-        top: scrollTextTop, // Usa il valore passato dal prop
+        top: titleVPosition, // Usa il valore passato dal prop
         height: "auto",
       }} // Centrare verticalmente}
     >
       <h2 id="header-main-title">{title}</h2>
       {subtitle && <p id="header-subtitle">{subtitle}</p>}
       {subsubtitle && <p id="header-subtitle">{subsubtitle}</p>}
+      {subsubtitle && <p id="header-subtitle">{subsubsubtitle}</p>}
       <p id="header-year">{year}</p>
       {showScrollText && (
         <p id="header-scroll-text" style={{}}>

@@ -132,13 +132,13 @@ const Scrollytelling = () => {
         ease: "power4.inOut",
       },
       onUpdate: (self) => {
-        console.log("Progress:", self.progress);
+        // console.log("Progress:", self.progress);
         const frameIndex = Math.floor(
           self.progress * (loadedImages.length - 1)
         );
         setCurrentFrame(frameIndex); // Aggiorna lo stato corrente
-        console.log("Loaded Images Length:", loadedImages.length);
-        console.log("Current Frame Index:", frameIndex);
+        // console.log("Loaded Images Length:", loadedImages.length);
+        // console.log("Current Frame Index:", frameIndex);
 
         const image = loadedImages[frameIndex];
         if (image) {
@@ -167,15 +167,37 @@ const Scrollytelling = () => {
 
     // Calcola dinamicamente lo spazio in base all'altezza del header
     const headerHeight = headerRef.current.offsetHeight;
-
-    ScrollTrigger.create({
+    // Trigger per mostrare/nascondere la timeline
+    const timelineTrigger = ScrollTrigger.create({
       trigger: secondSectionRef.current,
-      start: `top+=${headerHeight} top`, // Calcola l'inizio rispetto all'altezza del header
-      end: "top+=10% top", // Puoi regolare il valore per un comportamento diverso
-      markers: false, // Rimuovi dopo il debug
-      onEnter: () => setShowTimeline(false), // Nascondi la timeline
-      onLeaveBack: () => setShowTimeline(true), // Mostra di nuovo la timeline
+      start: `top+=${headerHeight} top`,
+      end: "top+=10% top",
+      markers: false,
+      onEnter: () => setShowTimeline(false),
+      onLeaveBack: () => setShowTimeline(true),
     });
+
+    // Trigger per lo scroll automatico alla seconda sezione
+    const scrollSnapTrigger = ScrollTrigger.create({
+      trigger: headerRef.current,
+      start: "top top",
+      end: "bottom+=50% top",
+      markers: false,
+      onLeave: () => {
+        if (secondSectionRef.current) {
+          secondSectionRef.current.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
+        }
+      },
+    });
+
+    // Cleanup solo dei trigger creati da questo useEffect
+    return () => {
+      timelineTrigger.kill();
+      scrollSnapTrigger.kill();
+    };
   }, [secondSectionRef, headerRef]);
   ///
 
@@ -225,12 +247,12 @@ const Scrollytelling = () => {
 
       const isMilestone1 = currentFrameRef.current < milestones[1];
 
-      console.log(
-        "Current Frame:",
-        currentFrameRef.current,
-        "Is Milestone 1:",
-        isMilestone1
-      );
+      // console.log(
+      //   "Current Frame:",
+      //   currentFrameRef.current,
+      //   "Is Milestone 1:",
+      //   isMilestone1
+      // );
 
       if (isMilestone1) {
         scrollTimeout = setTimeout(() => {
@@ -294,7 +316,7 @@ const Scrollytelling = () => {
           </div>
           <p>SUDIO BLANDO collective</p>
         </div>
-        <HeaderCenterTitle ref={headerCenterTitleRef} scrollTextTop="40vh" />
+        <HeaderCenterTitle ref={headerCenterTitleRef} titleVPosition="40vh" />
         <canvas
           ref={canvasRef}
           className="w-full h-auto will-change-transform block"
@@ -310,7 +332,10 @@ const Scrollytelling = () => {
       />
       {/* Seconda Sezione */}
       <div ref={secondSectionRef}>
-        <SecondSection />
+        <SecondSection
+          headerRef={headerRef}
+          secondSectionRef={secondSectionRef}
+        />
       </div>
     </div>
   );

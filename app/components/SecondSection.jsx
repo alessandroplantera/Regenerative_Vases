@@ -3,10 +3,12 @@
 import { useEffect, useRef, useState } from "react";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import * as THREE from "three";
+// import * as dat from "dat.gui";
+import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { gsap } from "gsap";
 import HeaderCenterTitle from "./HeaderCenterTitle";
 
-const SecondSection = () => {
+const SecondSection = ({ headerRef, secondSectionRef }) => {
   const canvasRef = useRef(null);
   const headerCenterTitleRef = useRef(null); // Ref condiviso
   const modelRef = useRef(null);
@@ -17,18 +19,41 @@ const SecondSection = () => {
   const isAutoRotating = useRef(false);
   const autoRotateTimeout = useRef(null);
   const [currentInfo, setCurrentInfo] = useState(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  const handleScrollToTop = () => {
+    console.log("Header Ref:", headerRef.current);
+    if (headerRef.current) {
+      console.log("Scrolling to header...");
+      headerRef.current.scrollIntoView({
+        behavior: "smooth", // Effetto di scroll fluido
+        block: "start", // Scorri fino alla parte superiore dell'elemento
+      });
+    }
+  };
 
   useEffect(() => {
+    // Funzione per determinare se è un dispositivo mobile
+    const checkIsMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    // Imposta inizialmente il valore e aggiungi un listener per il resize
+    checkIsMobile();
+    window.addEventListener("resize", checkIsMobile);
+
+    //Scene
     const scene = new THREE.Scene();
+    //Camera
     const camera = new THREE.PerspectiveCamera(
       75,
       window.innerWidth / window.innerHeight,
       0.1,
       1000
     );
-    camera.position.set(0, 1, 2);
+    camera.position.set(0, 1.5, 0);
     camera.lookAt(0, 0, 0);
-
+    //Renderer
     const renderer = new THREE.WebGLRenderer({
       canvas: canvasRef.current,
       antialias: true,
@@ -36,22 +61,72 @@ const SecondSection = () => {
     });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.outputEncoding = THREE.sRGBEncoding;
+    // Renderer adjustments
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap; // Ombre morbide
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 0.01; // Regola l'esposizione
 
-    // Lights
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.1);
-    scene.add(ambientLight);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.3); // Più soft
+    const spotLight = new THREE.SpotLight(0xffffff, 1.2); // Regola il valore
+    spotLight.position.set(0, 2, 3);
 
-    const spotLight = new THREE.SpotLight(0xffffff, 1.5, 5, Math.PI / 6, 0.5);
-    spotLight.intensity = 4;
-    spotLight.position.set(0, 1, 2);
-    spotLight.target.position.set(0, 0, 0);
-    scene.add(spotLight);
-    scene.add(spotLight.target);
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
+    directionalLight.position.set(5, 5, 5);
 
-    const backLight = new THREE.DirectionalLight(0xffffff, 0.1);
-    backLight.position.set(-2, 2, -2);
-    scene.add(backLight);
+    // const gui = new dat.GUI();
+    // const settings = {
+    //   exposure: 1,
+    //   ambientIntensity: 0.3,
+    //   spotIntensity: 1.2,
+    // };
 
+    // gui.add(settings, "exposure", 0, 2, 0.01).onChange((value) => {
+    //   renderer.toneMappingExposure = value;
+    // });
+
+    // gui.add(settings, "ambientIntensity", 0, 1, 0.1).onChange((value) => {
+    //   ambientLight.intensity = value;
+    // });
+
+    // gui.add(settings, "spotIntensity", 0, 3, 0.1).onChange((value) => {
+    //   spotLight.intensity = value;
+    // });
+    scene.add(ambientLight, spotLight, directionalLight);
+
+    //Orbit Controls
+    ///////////////////Applicare animazione automatica che dal top passa avanti quando l'utente entra nella section
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.1; // Ammortizzazione
+    controls.minDistance = 1.5;
+    controls.maxDistance = isMobile ? 3 : 2; // Distanza massima
+    controls.maxPolarAngle = Math.PI / 2; // Angolo massimo di inclinazione
+    controls.enablePan = false;
+    // GSAP e ScrollTrigger per l'animazione
+    import("gsap/ScrollTrigger").then(({ ScrollTrigger }) => {
+      gsap.registerPlugin(ScrollTrigger);
+
+      // Aggiungi l'animazione della camera quando si entra nella seconda sezione
+      ScrollTrigger.create({
+        trigger: secondSectionRef.current, // La sezione trigger per l'animazione
+        start: "top center", // Quando l'animazione inizia
+        onEnter: () => {
+          gsap.to(camera.position, {
+            x: 0, // Posizione orizzontale
+            y: 1, // Altezza leggermente sopra il centro del modello
+            z: isMobile ? 2.5 : 1.5, // Zoom-out
+            duration: 3, // Durata dell'animazione
+            delay: 0.4,
+            ease: "power4.inOut", // Tipo di easing
+            onUpdate: () => {
+              camera.lookAt(0, 0, 0); // Aggiorna la direzione della camera durante il movimento
+            },
+          });
+        },
+      });
+    });
     // Child Data
     const childData = [
       {
@@ -73,26 +148,69 @@ const SecondSection = () => {
         coordinates: "N45.88060418116533 E8.95080618178338",
       },
     ];
+    // Texture Loader
+    const textureLoader = new THREE.TextureLoader();
+    const baseColor = textureLoader.load("textures/baseColor.jpg");
+    const roughness = textureLoader.load("textures/roughness.png");
+    const normalMap = textureLoader.load("textures/normal.jpg");
+    // Imposta il centro di rotazione al centro della texture
+    baseColor.center.set(0.5, 0.5);
+    roughness.center.set(0.5, 0.5);
+    normalMap.center.set(0.5, 0.5);
+    // Applica una rotazione di 90 gradi (PI / 2 radianti)
+    baseColor.rotation = Math.PI / 2;
+    roughness.rotation = Math.PI / 2;
+    normalMap.rotation = Math.PI / 2;
+    // Scala la texture per ridurre la visibilità dei dettagli
+    const scaleFactor = 3; // Maggiore è il numero, meno visibili saranno i dettagli
+    baseColor.repeat.set(scaleFactor, scaleFactor);
+    roughness.repeat.set(scaleFactor, scaleFactor);
+    normalMap.repeat.set(scaleFactor, scaleFactor);
+    // Imposta il wrapping per permettere la ripetizione
+    baseColor.wrapS = THREE.RepeatWrapping;
+    baseColor.wrapT = THREE.RepeatWrapping;
+    roughness.wrapS = THREE.RepeatWrapping;
+    roughness.wrapT = THREE.RepeatWrapping;
+    normalMap.wrapS = THREE.RepeatWrapping;
+    normalMap.wrapT = THREE.RepeatWrapping;
 
+    //3D Loader
     const loader = new GLTFLoader();
     loader.load("vasiThreeJs.glb", (gltf) => {
       const model = gltf.scene;
       modelRef.current = model;
       model.position.y = -0.1;
       model.scale.set(3, 3, 3);
+      model.rotation.set(0, 1.5 * Math.PI, 0); // Rotazione iniziale (x, y, z)
 
       const objects = [];
       let meshIndex = 0; // Contatore per assegnare i dati
 
+      // Applica il materiale a tutte le mesh
       model.traverse((child) => {
         if (child.isMesh) {
-          // Sostituisci il materiale esistente con un materiale di default
+          console.log("Materiale della mesh:", child.material);
+          // Imposta un materiale standard con le texture PBR
           child.material = new THREE.MeshStandardMaterial({
-            color: 0xffffff, // Colore bianco di default
-            roughness: 4, // Controlla la rugosità
-            metalness: 0, // Controlla il livello di riflessione
+            map: baseColor, // Texture base color
+            roughnessMap: roughness, // Texture roughness
+            normalMap: normalMap, // Texture normal map
+            normalScale: new THREE.Vector2(0.3, 0.3), // Scala del normal map
+            roughness: 1, // Alta rugosità per minimizzare specularità
+            metalness: 0.0, // Nessun effetto metallico
           });
+          child.material.needsUpdate = true;
 
+          // Modifica lo shader per rimuovere la specularità diretta
+          child.material.onBeforeCompile = (shader) => {
+            shader.fragmentShader = shader.fragmentShader.replace(
+              "vec3 totalSpecular = reflectedLight.directSpecular + reflectedLight.indirectSpecular;",
+              "vec3 totalSpecular = reflectedLight.indirectSpecular;"
+            );
+          };
+
+          // Assicurati che il materiale sia aggiornato
+          // Aggiungi la mesh alla lista degli oggetti
           objects.push(child);
           if (meshIndex < childData.length) {
             child.userData = childData[meshIndex]; // Assegna i dati
@@ -101,29 +219,22 @@ const SecondSection = () => {
         }
       });
 
+      objectsRef.current = objects;
+
       if (objects.length === 0) {
         console.error("No valid Mesh objects found in the model!");
         return;
       }
-
-      objectsRef.current = objects;
-
-      // Posiziona gli oggetti attorno all'asse Y
-      const radius = 0.15;
-      const angleStep = (Math.PI * 2) / objects.length;
-      objects.forEach((object, index) => {
-        const angle = index * angleStep;
-        object.position.set(
-          Math.sin(angle) * radius,
-          0,
-          Math.cos(angle) * radius
-        );
-      });
-
       scene.add(model);
-      updateInfo(); // Aggiorna le informazioni inizialmente
+
+      if (objects.length > 0) {
+        updateInfo(); // Aggiorna le informazioni inizialmente
+      } else {
+        console.error("No valid objects to update info for!");
+      }
     });
 
+    //Rotazione automatica
     const normalizeRotation = (rotation) =>
       ((rotation % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
 
@@ -170,7 +281,7 @@ const SecondSection = () => {
       clearTimeout(autoRotateTimeout.current);
       autoRotateTimeout.current = setTimeout(() => {
         isAutoRotating.current = true;
-      }, 2000);
+      }, 800);
     };
 
     const clearAutoRotate = () => {
@@ -197,6 +308,7 @@ const SecondSection = () => {
       updateInfo();
     };
 
+    //Snap
     const handleMouseUp = () => {
       if (!isDragging.current || !modelRef.current) return;
 
@@ -209,8 +321,8 @@ const SecondSection = () => {
 
       gsap.to(modelRef.current.rotation, {
         y: snappedRotation,
-        duration: 0.5,
-        ease: "power2.out",
+        duration: 1,
+        ease: "power4.out",
         onUpdate: updateInfo,
       });
 
@@ -224,41 +336,58 @@ const SecondSection = () => {
 
     return () => {
       renderer.dispose();
+      window.removeEventListener("resize", checkIsMobile);
       clearTimeout(autoRotateTimeout.current);
       renderer.domElement.removeEventListener("mousedown", handleMouseDown);
       renderer.domElement.removeEventListener("mousemove", handleMouseMove);
       renderer.domElement.removeEventListener("mouseup", handleMouseUp);
       renderer.domElement.removeEventListener("mouseleave", handleMouseUp);
     };
-  }, []);
+  }, [isMobile]);
 
   return (
     <section className="relative w-screen h-screen bg-gray-200 overflow-hidden flex justify-center items-center">
+      <div className="absolute inset-0 z-100">
+        <p
+          className="absolute bottom-10 right-0 p-4 text-blandoBlue underline cursor-pointer text-center z-10"
+          onClick={handleScrollToTop}
+        >
+          Go Up
+        </p>
+      </div>
       <div className="relative w-full h-screen">
         <HeaderCenterTitle
           ref={headerCenterTitleRef}
           showScrollText={false}
-          scrollTextTop="2vh"
+          titleVPosition="2vh"
         />{" "}
       </div>
-      <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />
+      <canvas ref={canvasRef} className="absolute inset-0 w-full h-full z-0" />
       {currentInfo ? (
-        <div className="absolute bottom-10 text-center text-lg bg-white p-4 rounded-lg shadow-md">
-          <p>
-            <strong>Nome:</strong> {currentInfo.name}
-          </p>
-          <p>
-            <strong>Dimensioni:</strong> {currentInfo.dimensions}
-          </p>
-          <p>
-            <strong>Peso:</strong> {currentInfo.weight}
-          </p>
-          <p>
-            <strong>Coordinate:</strong> {currentInfo.coordinates}
-          </p>
+        <div className="absolute bottom-10 text-center p-4 text-blandoBlue">
+          {/* Nome con stile grande */}
+          <p className="text-5xl mb-2">{currentInfo.name}</p>
+          {/* Linea divisoria */}
+          <hr className="border-blandoBlue my-2 w-3/4 mx-auto" />
+          {/* Dimensioni e peso */}
+          <div className="flex justify-between text-lg w-full px-4 mt-4">
+            <div>
+              <p className="font-semibold">dimensions</p>
+              <p>{currentInfo.dimensions}</p>
+            </div>
+            <div>
+              <p className="font-semibold">weight</p>
+              <p>{currentInfo.weight}</p>
+            </div>
+          </div>
+          {/* Coordinate */}
+          <div className="mt-4">
+            <p className="font-semibold">waste coordinates</p>
+            <p>{currentInfo.coordinates}</p>
+          </div>
         </div>
       ) : (
-        <div className="absolute bottom-10 text-center text-lg bg-white p-4 rounded-lg shadow-md">
+        <div className="absolute bottom-10 text-center text-lg">
           <p>
             <strong>Informazioni non disponibili</strong>
           </p>
