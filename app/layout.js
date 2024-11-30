@@ -1,5 +1,6 @@
 import localFont from "next/font/local";
 import "./globals.css";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const sAntique = localFont({
   src: "./fonts/SAntique.otf",
@@ -34,6 +35,7 @@ export default function RootLayout({ children }) {
         className={`${sAntique.variable} ${sRegular.variable} ${sThin.variable} ${ppbold.variable} ${ppregular.variable} antialiased`}
       >
         {children}
+        <SpeedInsights />
       </body>
     </html>
   );
