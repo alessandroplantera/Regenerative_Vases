@@ -1,4 +1,5 @@
 "use client";
+
 const Timeline = ({
   currentFrame,
   milestones,
@@ -6,7 +7,7 @@ const Timeline = ({
   scrollToFrame,
   isVisible,
 }) => {
-  const step = 40; // Un trattino ogni 40 immagini
+  const step = 40; // Un trattino ogni 40 frame
   const totalSteps = Math.ceil(totalFrames / step);
 
   // Combiniamo milestone e trattini intermedi
@@ -36,23 +37,24 @@ const Timeline = ({
         alignItems: "flex-end",
         top: "25vh",
         height: "80vh",
-        width: "auto", // Aumenta lo spazio per il testo e il trattino
+        width: "auto",
         zIndex: 1000,
-        opacity: isVisible ? 1 : 0, // Opacità controllata
-        pointerEvents: isVisible ? "auto" : "none", // Disattiva interazioni se non visibile
-        transition: "opacity 0.5s ease", // Transizione fluida
+        opacity: isVisible ? 1 : 0,
+        pointerEvents: isVisible ? "auto" : "none",
+        transition: "opacity 0.5s ease",
       }}
     >
       {timelineItems.map(({ frameIndex, isMilestone }) => {
-        const isActive = frameIndex <= currentFrame + 1;
+        const isActive = frameIndex <= currentFrame;
 
         return (
           <div
             key={frameIndex}
-            className="flex flex-row items-center" // Cambia a flex-row per layout orizzontale
-            onClick={() => scrollToFrame(frameIndex)}
+            className="flex flex-row items-center"
+            onClick={() => scrollToFrame(frameIndex)} // Usa la nuova funzione scrollToFrame
             style={{
               marginBottom: "8px",
+              cursor: "pointer",
             }}
           >
             {isMilestone && (
@@ -60,7 +62,7 @@ const Timeline = ({
                 style={{
                   fontSize: "10px",
                   color: isActive ? "var(--blandoBlue)" : "gray",
-                  marginRight: "8px", // Spaziatura tra il testo e il trattino
+                  marginRight: "8px",
                   textAlign: "right",
                 }}
               >
@@ -69,7 +71,7 @@ const Timeline = ({
             )}
             <div
               style={{
-                flexShrink: 0, // Mantiene la dimensione fissa del trattino
+                flexShrink: 0,
                 width: isMilestone ? "50px" : "38px",
                 height: "2px",
                 backgroundColor: isActive ? "var(--blandoBlue)" : "gray",
@@ -82,4 +84,5 @@ const Timeline = ({
     </div>
   );
 };
+
 export default Timeline;

@@ -9,13 +9,10 @@ import { useMemo } from "react";
 import { ScrollToPlugin } from "gsap/ScrollToPlugin";
 import HeaderCenterTitle from "./HeaderCenterTitle";
 
-
 gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 
 const Scrollytelling = () => {
-  const canvasRef = useRef(null);
   const headerRef = useRef(null);
-  const [loadedImages, setLoadedImages] = useState([]);
   const [currentFrame, setCurrentFrame] = useState(0); // Dichiarazione di currentFrame
   const secondSectionRef = useRef(null); // Riferimento alla seconda sezione
   const [showTimeline, setShowTimeline] = useState(true); // Stato per mostrare/nascondere la timeline
@@ -23,8 +20,8 @@ const Scrollytelling = () => {
   const headerCenterTitleRef = useRef(null);
   const headerTeamInfo = useRef(null);
   const headerMoreInfo = useRef(null);
-
-  const totalFrames = 1547;
+  const videoRef = useRef(null);
+  const totalFrames = 1560;
   const milestones = useMemo(
     () => [
       0,
@@ -36,121 +33,62 @@ const Scrollytelling = () => {
     [totalFrames] // Ricalcola solo se totalFrames cambia
   );
 
-  // Funzione per caricare immagini iniziali e successive
-  const loadInitialImages = async () => {
-    const initialFrames = Math.min(20, totalFrames);
-    const initialImages = [];
-    for (let i = 1; i <= initialFrames; i++) {
-      const img = new Image();
-      img.src = `/images/sequence/frame${i}.webp`;
-      initialImages.push(img);
-      if (i === 1) {
-        // Disegna la prima immagine non appena è pronta
-        img.onload = () => {
-          const canvas = canvasRef.current;
-          const context = canvas.getContext("2d");
-          if (canvas && context) {
-            context.clearRect(0, 0, canvas.width, canvas.height);
-            context.drawImage(img, 0, 0, canvas.width, canvas.height);
-          }
-        };
-      }
-    }
-    setLoadedImages(initialImages);
-
-    // Carica le altre immagini in background
-    const remainingImages = [];
-    for (let i = initialFrames + 1; i <= totalFrames; i++) {
-      const img = new Image();
-      img.src = `/images/sequence/frame${i}.webp`;
-      remainingImages.push(img);
-    }
-    setLoadedImages((prev) => [...prev, ...remainingImages]);
-  };
-  // Funzione per navigare al frame specifico
-  const scrollToFrame = (frameIndex) => {
-    const targetProgress = frameIndex / (totalFrames - 1); // Calcola la progressione target
-    ScrollTrigger.getAll().forEach((trigger) => {
-      if (trigger.vars.trigger === headerRef.current) {
-        const targetScroll =
-          trigger.start + targetProgress * (trigger.end - trigger.start);
-        gsap.to(window, {
-          scrollTo: { y: targetScroll }, // Usa l'opzione scrollTo con "y"
-          duration: 1, // Durata dell'animazione dello scroll
-          ease: "power2.inOut",
-        });
-      }
-    });
-  };
-
-  // Esegui la funzione di caricamento immagini al montaggio del componente
+  const fps = 60;
   useEffect(() => {
-    loadInitialImages();
-  }, []);
-
+    if (videoRef.current) {
+      videoRef.current.currentTime = 0; // Assicurati che parta sempre dal primo frame
+      setCurrentFrame(0); // Aggiorna il frame corrente
+    }
+  }, []); // Questo effetto viene eseguito solo una volta al caricamento
   useEffect(() => {
-    if (!canvasRef.current || loadedImages.length === 0) return;
+    if (!videoRef.current) return;
 
-    const canvas = canvasRef.current;
-    const context = canvas.getContext("2d");
+    const video = videoRef.current;
 
-    const resizeCanvas = () => {
-      const viewportWidth = window.innerWidth;
-      const viewportHeight = window.innerHeight;
-      const scale = Math.min(viewportWidth / 1080, viewportHeight / 1080);
-      const canvasWidth = 1080 * scale;
-      const canvasHeight = 1080 * scale;
-
-      canvas.width = canvasWidth;
-      canvas.height = canvasHeight;
-      canvas.style.width = `${canvasWidth}px`;
-      canvas.style.height = `${canvasHeight}px`;
-      canvas.style.position = "absolute";
-      canvas.style.top = `${(viewportHeight - canvasHeight) / 2}px`;
-      canvas.style.left = `${(viewportWidth - canvasWidth) / 2}px`;
-    };
-
-    resizeCanvas();
-    const isMobile = window.innerWidth <= 768;
-    //Timeline
+    // Configura ScrollTrigger per sincronizzare il video con lo scroll
     const scrollTriggerInstance = ScrollTrigger.create({
-      trigger: headerRef.current,
+      trigger: headerRef.current, // Elemento principale della sezione
       start: "top top",
-      endTrigger: secondSectionRef.current, // Usa SecondSection come riferimento per il trigger di fine
-      end: "top top", // L'end è sincronizzato con l'inizio della seconda sezione
-      scrub: true,
-      pin: true,
-      pinSpacing: true, // Assicurati che lo spazio venga aggiunto correttamente
+      endTrigger: secondSectionRef.current, // Fine sincronizzata con l'inizio della seconda sezione
+      end: "top top",
+      scrub: true, // Sincronizza lo scroll con il movimento
+      pin: true, // Fissa l'elemento durante lo scroll
+      pinSpacing: true, // Aggiunge lo spazio durante il pinning
       snap: {
         snapTo: (progress) => {
+          // Calcola il frame corrente
           const frame = Math.floor(progress * (totalFrames - 1));
           const closestMilestone = milestones.reduce((prev, curr) =>
             Math.abs(curr - frame) < Math.abs(prev - frame) ? curr : prev
           );
-          return closestMilestone / (totalFrames - 1);
+          return closestMilestone / (totalFrames - 1); // Snap al frame più vicino
         },
-        duration: { min: 0.2, max: 0.5 },
-        ease: "power4.inOut",
+        duration: { min: 0.2, max: 0.5 }, // Durata dello snap
+        ease: "power4.inOut", // Animazione dello snap
       },
       onUpdate: (self) => {
-        // console.log("Progress:", self.progress);
-        const frameIndex = Math.floor(
-          self.progress * (loadedImages.length - 1)
-        );
-        setCurrentFrame(frameIndex); // Aggiorna lo stato corrente
-        // console.log("Loaded Images Length:", loadedImages.length);
-        // console.log("Current Frame Index:", frameIndex);
+        // Aggiorna il frame corrente
+        const progress = self.progress;
+        const frameIndex = Math.floor(progress * (totalFrames - 1));
+        const currentTime = frameIndex / fps; // Calcola il tempo del video in base al frame
 
-        const image = loadedImages[frameIndex];
-        if (image) {
-          context.clearRect(0, 0, canvas.width, canvas.height);
-          context.drawImage(image, 0, 0, canvas.width, canvas.height);
+        if (videoRef.current) {
+          videoRef.current.currentTime = currentTime; // Aggiorna il tempo corrente del video
         }
+
+        setCurrentFrame(frameIndex); // Aggiorna lo stato del frame corrente per la timeline
       },
     });
-
     const handleResize = () => {
-      resizeCanvas();
+      if (videoRef.current) {
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+        const scale = Math.min(viewportWidth / 1920, viewportHeight / 1080);
+
+        videoRef.current.style.width = `${1920 * scale}px`;
+        videoRef.current.style.height = `${1080 * scale}px`;
+      }
+
       scrollTriggerInstance.refresh(); // Aggiorna ScrollTrigger
     };
 
@@ -158,9 +96,77 @@ const Scrollytelling = () => {
 
     return () => {
       window.removeEventListener("resize", handleResize);
-      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
+      ScrollTrigger.getAll().forEach((trigger) => trigger.kill()); // Pulisci tutti i trigger
     };
-  }, [loadedImages, scrollTimeout]);
+  }, [milestones, totalFrames, fps]);
+
+  useEffect(() => {
+    if (!secondSectionRef.current) return;
+
+    const timelineVisibilityTrigger = ScrollTrigger.create({
+      trigger: secondSectionRef.current,
+      start: "top center", // Quando la sezione entra nel centro della viewport
+      onEnter: () => setShowTimeline(false), // Nascondi la timeline
+      onLeaveBack: () => setShowTimeline(true), // Mostra di nuovo la timeline
+    });
+
+    // Cleanup
+    return () => {
+      timelineVisibilityTrigger.kill();
+    };
+  }, [secondSectionRef]);
+
+  useEffect(() => {
+    if (!secondSectionRef.current) {
+      console.error("secondSectionRef is not attached to any DOM element.");
+      return;
+    }
+
+    const snapToSecondSection = ScrollTrigger.create({
+      trigger: secondSectionRef.current,
+      start: "top 70%", // Quando il top della sezione entra al 40% della viewport
+      onEnter: () => {
+        gsap.to(window, {
+          scrollTo: {
+            y: secondSectionRef.current.offsetTop, // Scorri fino al top della sezione
+          },
+          duration: 1, // Durata dello scroll
+          ease: "power2.inOut",
+        });
+      },
+      // markers: true, // Aggiungi marker per il debug
+    });
+
+    return () => {
+      snapToSecondSection.kill(); // Cleanup del trigger
+    };
+  }, [secondSectionRef]);
+  const scrollToFrame = (frameIndex) => {
+    const targetTime = frameIndex / fps; // Calcola il tempo corrispondente al frame
+    const targetProgress = frameIndex / (totalFrames - 1); // Calcola la progressione target
+
+    if (videoRef.current) {
+      // Usa GSAP per animare il tempo del video
+      gsap.to(videoRef.current, {
+        currentTime: targetTime,
+        duration: 1, // Durata dell'animazione
+        ease: "power2.inOut",
+      });
+    }
+
+    // Anima lo scroll
+    ScrollTrigger.getAll().forEach((trigger) => {
+      if (trigger.vars.trigger === headerRef.current) {
+        const targetScroll =
+          trigger.start + targetProgress * (trigger.end - trigger.start);
+        gsap.to(window, {
+          scrollTo: { y: targetScroll },
+          duration: 1, // Durata dello scroll
+          ease: "power2.inOut",
+        });
+      }
+    });
+  };
 
   // Mostra/Nascondi timeline in base alla visibilità della seconda sezione
   useEffect(() => {
@@ -318,19 +324,24 @@ const Scrollytelling = () => {
           <p>SUDIO BLANDO collective</p>
         </div>
         <HeaderCenterTitle ref={headerCenterTitleRef} titleVPosition="40vh" />
-        <canvas
-          ref={canvasRef}
-          className="w-full h-auto will-change-transform block"
+        <video
+          ref={videoRef}
+          src="/videos/input.mp4" // Percorso al tuo video ottimizzato
+          preload="auto"
+          playsInline
+          muted
+          className="absolute top-0 left-0 w-full h-full object-cover"
         />
       </header>
       {/* Timeline */}
       <Timeline
-        currentFrame={currentFrame}
+        currentFrame={Math.round(videoRef.current?.currentTime * fps)} // Calcola il frame corrente dal tempo del video
         milestones={milestones}
         totalFrames={totalFrames}
         scrollToFrame={scrollToFrame}
         isVisible={showTimeline} // Passa lo stato di visibilità
       />
+
       {/* Seconda Sezione */}
       <div ref={secondSectionRef}>
         <SecondSection
@@ -343,4 +354,3 @@ const Scrollytelling = () => {
 };
 
 export default Scrollytelling;
-
