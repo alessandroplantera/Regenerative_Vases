@@ -6,9 +6,11 @@ import * as THREE from "three";
 // import * as dat from "dat.gui";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { gsap } from "gsap";
+import { ScrollToPlugin } from "gsap/ScrollToPlugin";
+import ScrollTrigger from "gsap/ScrollTrigger";
 import HeaderCenterTitle from "./HeaderCenterTitle";
 
-const SecondSection = ({ headerRef, secondSectionRef }) => {
+const SecondSection = ({ secondSectionRef, scrollToTop }) => {
   const canvasRef = useRef(null);
   const headerCenterTitleRef = useRef(null); // Ref condiviso
   const modelRef = useRef(null);
@@ -21,15 +23,10 @@ const SecondSection = ({ headerRef, secondSectionRef }) => {
   const [currentInfo, setCurrentInfo] = useState(null);
   const [isMobile, setIsMobile] = useState(false);
 
+  gsap.registerPlugin(ScrollToPlugin);
+
   const handleScrollToTop = () => {
-    console.log("Header Ref:", headerRef.current);
-    if (headerRef.current) {
-      console.log("Scrolling to header...");
-      headerRef.current.scrollIntoView({
-        behavior: "smooth", // Effetto di scroll fluido
-        block: "start", // Scorri fino alla parte superiore dell'elemento
-      });
-    }
+    // Disattiva temporaneamente i trigger
   };
 
   useEffect(() => {
@@ -51,6 +48,26 @@ const SecondSection = ({ headerRef, secondSectionRef }) => {
       0.1,
       1000
     );
+
+    if (typeof window === "undefined" || !secondSectionRef.current) return;
+    if (!secondSectionRef.current) return;
+
+    const cameraTrigger = ScrollTrigger.create({
+      trigger: secondSectionRef.current,
+      start: "top center",
+      onEnter: () => {
+        gsap.to(camera.position, {
+          x: 0,
+          y: 1,
+          z: isMobile ? 2.5 : 1.5,
+          duration: 3,
+          delay: 0.4,
+          ease: "power4.inOut",
+          onUpdate: () => camera.lookAt(0, 0, 0),
+        });
+      },
+    });
+
     camera.position.set(0, 1.5, 0);
     camera.lookAt(0, 0, 0);
     //Renderer
@@ -75,24 +92,6 @@ const SecondSection = ({ headerRef, secondSectionRef }) => {
     const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
     directionalLight.position.set(5, 5, 5);
 
-    // const gui = new dat.GUI();
-    // const settings = {
-    //   exposure: 1,
-    //   ambientIntensity: 0.3,
-    //   spotIntensity: 1.2,
-    // };
-
-    // gui.add(settings, "exposure", 0, 2, 0.01).onChange((value) => {
-    //   renderer.toneMappingExposure = value;
-    // });
-
-    // gui.add(settings, "ambientIntensity", 0, 1, 0.1).onChange((value) => {
-    //   ambientLight.intensity = value;
-    // });
-
-    // gui.add(settings, "spotIntensity", 0, 3, 0.1).onChange((value) => {
-    //   spotLight.intensity = value;
-    // });
     scene.add(ambientLight, spotLight, directionalLight);
 
     //Orbit Controls
@@ -104,29 +103,6 @@ const SecondSection = ({ headerRef, secondSectionRef }) => {
     controls.maxDistance = isMobile ? 3 : 2; // Distanza massima
     controls.maxPolarAngle = Math.PI / 2; // Angolo massimo di inclinazione
     controls.enablePan = false;
-    // GSAP e ScrollTrigger per l'animazione
-    import("gsap/ScrollTrigger").then(({ ScrollTrigger }) => {
-      gsap.registerPlugin(ScrollTrigger);
-
-      // Aggiungi l'animazione della camera quando si entra nella seconda sezione
-      ScrollTrigger.create({
-        trigger: secondSectionRef.current, // La sezione trigger per l'animazione
-        start: "top center", // Quando l'animazione inizia
-        onEnter: () => {
-          gsap.to(camera.position, {
-            x: 0, // Posizione orizzontale
-            y: 1, // Altezza leggermente sopra il centro del modello
-            z: isMobile ? 2.5 : 1.5, // Zoom-out
-            duration: 3, // Durata dell'animazione
-            delay: 0.4,
-            ease: "power4.inOut", // Tipo di easing
-            onUpdate: () => {
-              camera.lookAt(0, 0, 0); // Aggiorna la direzione della camera durante il movimento
-            },
-          });
-        },
-      });
-    });
     // Child Data
     const childData = [
       {
@@ -189,7 +165,7 @@ const SecondSection = ({ headerRef, secondSectionRef }) => {
       // Applica il materiale a tutte le mesh
       model.traverse((child) => {
         if (child.isMesh) {
-          console.log("Materiale della mesh:", child.material);
+          // //console.log("Materiale della mesh:", child.material);
           // Imposta un materiale standard con le texture PBR
           child.material = new THREE.MeshStandardMaterial({
             map: baseColor, // Texture base color
@@ -336,6 +312,7 @@ const SecondSection = ({ headerRef, secondSectionRef }) => {
 
     return () => {
       renderer.dispose();
+      cameraTrigger.kill();
       window.removeEventListener("resize", checkIsMobile);
       clearTimeout(autoRotateTimeout.current);
       renderer.domElement.removeEventListener("mousedown", handleMouseDown);
@@ -343,14 +320,14 @@ const SecondSection = ({ headerRef, secondSectionRef }) => {
       renderer.domElement.removeEventListener("mouseup", handleMouseUp);
       renderer.domElement.removeEventListener("mouseleave", handleMouseUp);
     };
-  }, [isMobile]);
+  }, [secondSectionRef, isMobile]);
 
   return (
     <section className="relative w-screen h-screen bg-gray-200 overflow-hidden flex justify-center items-center">
       <div className="absolute inset-0 z-100">
         <p
           className="absolute bottom-10 right-0 p-4 text-blandoBlue underline cursor-pointer text-center z-10"
-          onClick={handleScrollToTop}
+          onClick={scrollToTop}
         >
           Go Up
         </p>
