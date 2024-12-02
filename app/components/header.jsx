@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect, useRef, forwardRef } from "react";
-
 import gsap from "gsap";
 import ScrollTrigger from "gsap/ScrollTrigger";
 import HeaderCenterTitle from "./HeaderCenterTitle";
@@ -10,21 +9,39 @@ gsap.registerPlugin(ScrollTrigger);
 
 const Header = forwardRef(
   (
-    { setCurrentFrame, currentFrame, totalFrames, milestones, fps }, // Props
+    {
+      setCurrentFrame,
+      currentFrame,
+      totalFrames,
+      milestones,
+      fps,
+      onVideoLoad,
+      videoRef, // Ricevi videoRef come prop
+    },
     ref // Ref passato tramite forwardRef
   ) => {
-    const videoRef = useRef(null); // Riferimento per il video
     const headerMoreInfo = useRef(null);
     const headerTeamInfo = useRef(null);
     const headerCenterTitleRef = useRef(null);
 
+    // Gestisce il caricamento del video
     useEffect(() => {
-      if (videoRef.current) {
-        videoRef.current.currentTime = 0; // Assicura che il video inizi dal primo frame
-        setCurrentFrame(0);
-      }
-    }, []);
+      const video = videoRef.current;
 
+      if (!video) return;
+
+      const handleCanPlayThrough = () => {
+        if (onVideoLoad) onVideoLoad(); // Chiama il callback quando il video è pronto
+      };
+
+      video.addEventListener("canplaythrough", handleCanPlayThrough);
+
+      return () => {
+        video.removeEventListener("canplaythrough", handleCanPlayThrough);
+      };
+    }, [onVideoLoad]);
+
+    // Sincronizzazione dello scroll e aggiornamento del frame corrente
     useEffect(() => {
       if (!videoRef.current || !ref?.current) return;
 
@@ -81,10 +98,7 @@ const Header = forwardRef(
     }, [milestones, totalFrames, fps]);
 
     return (
-      <header
-        ref={ref} // Usa il ref passato
-        className="relative w-screen h-screen bg-gray-200"
-      >
+      <header ref={ref} className="relative w-screen h-screen bg-gray-200">
         <HeaderCenterTitle
           ref={headerCenterTitleRef}
           headerMoreInfo={headerMoreInfo}
@@ -95,10 +109,15 @@ const Header = forwardRef(
         <video
           ref={videoRef}
           src="/videos/input.mp4"
-          preload="auto"
+          preload="metadata" // More conservative preload strategy
           playsInline
           muted
           className="absolute top-0 left-0 w-full h-full object-cover"
+          onLoadStart={() => console.log("Video Load Start")}
+          onLoadedMetadata={(e) =>
+            console.log("Metadata Loaded", e.target.duration)
+          }
+          onError={(e) => console.error("Video Load Error", e)}
         />
       </header>
     );
