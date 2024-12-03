@@ -35,7 +35,7 @@ const useScrollToTopOnTrigger = (ref, options = {}) => {
     return () => {
       trigger.kill();
     };
-  }, [ref, start, duration, endTrigger]);
+  }, [ref, start, duration, endTrigger, end]);
 };
 
 export default useScrollToTopOnTrigger;

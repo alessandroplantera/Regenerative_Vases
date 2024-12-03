@@ -4,7 +4,6 @@ import React, { useEffect, useState, useMemo, useRef } from "react";
 import gsap from "gsap";
 import ScrollTrigger from "gsap/ScrollTrigger";
 import Header from "./header";
-import Timeline from "./Timeline";
 import SecondSection from "./SecondSection";
 import useScrollToTopOnTrigger from "./hooks/useScrollToTopOnTrigger"; // Importa il tuo hook
 

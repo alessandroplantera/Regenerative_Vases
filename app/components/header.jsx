@@ -29,13 +29,13 @@ const Header = forwardRef(
     const [isCursorVisible, setIsCursorVisible] = useState(false); // Stato visibilità cursore
 
     // Aggiorna la posizione del cursore e l'indice della parola
-    const handleMouseMove = (event) => {
-      setCursorPosition({ x: event.clientX, y: event.clientY });
-
-      // Aggiorna l'indice della parola in modo incrementale
-      setCurrentWordIndex((prevIndex) => (prevIndex + 1) % words.length);
-    };
     useEffect(() => {
+      const handleMouseMove = (event) => {
+        setCursorPosition({ x: event.clientX, y: event.clientY });
+
+        // Aggiorna l'indice della parola in modo incrementale
+        setCurrentWordIndex((prevIndex) => (prevIndex + 1) % words.length);
+      };
       const handleMouseEnter = () => setIsCursorVisible(true);
       const handleMouseLeave = () => setIsCursorVisible(false);
 
@@ -122,5 +122,6 @@ const Header = forwardRef(
     );
   }
 );
+Header.displayName = "Header"; // Aggiungi la displayName qui
 
 export default Header;
