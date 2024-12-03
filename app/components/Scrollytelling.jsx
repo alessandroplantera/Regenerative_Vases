@@ -12,11 +12,26 @@ gsap.registerPlugin(ScrollTrigger);
 
 const Scrollytelling = () => {
   const [currentFrame, setCurrentFrame] = useState(0); // Stato per il frame corrente
+  const [isLoaded, setIsLoaded] = useState(false); // Stato per sapere se il video è caricato
   const headerRef = useRef(null); // Riferimento all'header
   const [showTimeline, setShowTimeline] = useState(true); // Stato per la visibilità della timeline
   const secondSectionRef = useRef(null); // Riferimento alla seconda sezione
   const totalFrames = 1560;
   const fps = 60;
+  const milestones = useMemo(
+    () => [
+      0,
+      Math.floor(totalFrames * 0.25),
+      Math.floor(totalFrames * 0.5),
+      Math.floor(totalFrames * 0.75),
+      totalFrames - 1,
+    ],
+    [totalFrames]
+  );
+
+  const handleLoaded = () => {
+    setIsLoaded(true); // Aggiorna lo stato quando il video è caricato
+  };
 
   // Funzione per scrollare in cima
   const scrollToTop = () => {
@@ -31,17 +46,6 @@ const Scrollytelling = () => {
       });
     }
   };
-
-  const milestones = useMemo(
-    () => [
-      0,
-      Math.floor(totalFrames * 0.25),
-      Math.floor(totalFrames * 0.5),
-      Math.floor(totalFrames * 0.75),
-      totalFrames - 1,
-    ],
-    [totalFrames]
-  );
 
   // Funzione per scrollare a un frame specifico
   const scrollToFrame = (frameIndex) => {

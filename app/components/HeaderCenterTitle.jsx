@@ -8,7 +8,7 @@ const HeaderCenterTitle = forwardRef(
       currentFrame,
       milestones,
       fps,
-      titleVPosition = "66.6vh",
+      alignment = "center", // Nuova prop per gestire l'allineamento
       title = "(re)generative vases",
       subtitle = "place-based",
       subsubtitle = " design from waste",
@@ -22,6 +22,7 @@ const HeaderCenterTitle = forwardRef(
 
     useEffect(() => {
       if (!ref.current || !currentFrame || !milestones) return;
+
       const hideTitle = () => {
         gsap.to(ref.current, {
           opacity: 0,
@@ -31,7 +32,6 @@ const HeaderCenterTitle = forwardRef(
       };
 
       const resetTitle = () => {
-        console.log("resetTitle");
         gsap.to(ref.current, {
           opacity: 1,
           duration: 1,
@@ -39,43 +39,40 @@ const HeaderCenterTitle = forwardRef(
         });
       };
 
-      // Verifica se il frame corrente è vicino alla prima milestone
       const isInFirstMilestone =
         currentFrame >= milestones[0] && currentFrame < milestones[1];
 
-      console.log(isInFirstMilestone);
-
-      // Cancella eventuali timeout attivi
       if (hideTimeoutRef.current) {
         clearTimeout(hideTimeoutRef.current);
       }
 
       if (isInFirstMilestone) {
-        // Se siamo nella prima milestone, mostra il titolo dopo un ritardo
         hideTimeoutRef.current = setTimeout(() => {
           resetTitle();
         }, 3000);
       } else {
-        // Nascondi il titolo per tutte le altre milestone
         hideTitle();
       }
 
       return () => {
-        // Cleanup eseguito solo allo smontaggio del componente
         if (!isInFirstMilestone && hideTimeoutRef.current) {
           clearTimeout(hideTimeoutRef.current);
         }
       };
-    }, [currentFrame, milestones, fps, ref.current]);
+    }, [currentFrame, milestones, fps, ref]);
 
     return (
       <div
         id="header-center-title"
         ref={ref}
-        className="absolute flex flex-col items-center justify-center text-center z-10"
+        className={`absolute flex flex-col items-center text-center z-10`}
         style={{
-          top: titleVPosition,
-          height: "auto",
+          top: alignment === "center" ? "50%" : "0",
+          transform:
+            alignment === "center"
+              ? "translate(-50%, -50%)"
+              : "translate(-50%, 0%)",
+          left: alignment === "center" ? "50%" : "50%",
         }}
       >
         <h2 id="header-main-title">{title}</h2>

@@ -39,30 +39,30 @@ const Timeline = forwardRef(
         {timelineItems.map(({ frameIndex, isMilestone }) => {
           const isActive = frameIndex <= currentFrame;
 
-          return (
+            return (
             <div
               key={frameIndex}
               className="flex flex-row items-center mb-2 cursor-pointer"
               onClick={() => scrollToFrame(frameIndex)}
             >
               {isMilestone && (
-                <div
-                  className={`text-xs mr-2 text-right ${
-                    isActive ? "text-blue-500" : "text-gray-400"
-                  }`}
-                >
-                  {`Milestone ${milestones.indexOf(frameIndex) + 1}`}
-                </div>
+              <div
+                className={`text-xs mr-2 text-right ${
+                isActive ? "text-[var(--blandoBlue)]" : "text-gray-400"
+                }`}
+              >
+                {`Milestone ${milestones.indexOf(frameIndex) + 1}`}
+              </div>
               )}
               <div
-                className={`h-0.5 ${
-                  isMilestone ? "w-12" : "w-10"
-                } transition-colors ${
-                  isActive ? "bg-blue-500" : "bg-gray-400"
-                }`}
+              className={`h-0.5 ${
+                isMilestone ? "w-12" : "w-10"
+              } transition-colors ${
+                isActive ? "bg-[var(--blandoBlue)]" : "bg-gray-400"
+              }`}
               />
             </div>
-          );
+            );
         })}
       </div>
     );

@@ -19,9 +19,6 @@ body {
   color: var(--foreground);
   background: var(--background);
 }
-.second-section {
-
-}
 .scrollytelling-section {
   position: relative;
   z-index: 1; /* Sotto la seconda sezione */
@@ -32,10 +29,14 @@ header {
 
 /* Stile per l'intero container in alto a sinistra */
 #header-center-title {
+  position: absolute;
+  top: 50%;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translate(-50%, -50%); /* Trasla sia orizzontalmente che verticalmente */
   width: auto; /* Adatta la larghezza al contenuto */
   padding: 20px; /* Aggiungi un padding coerente */
+  z-index: 10; /* Assicurati che sia sopra al video */
+  text-align: center; /* Allinea il testo centralmente */
 }
 /* Stile per il logo */
 #header-logo {
@@ -119,34 +120,34 @@ header {
 .team-item {
   margin-bottom: 1rem;
 }
-.loader {
+.loader-overlay {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(255, 255, 255, 0.9);
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  z-index: 10;
+  z-index: 1000;
 }
 
 .progress-bar {
-  width: 80%; /* Larghezza della barra */
-  height: 10px; /* Altezza della barra */
-  background-color: #444; /* Sfondo della barra */
-  border-radius: 5px; /* Angoli arrotondati */
-  overflow: hidden; /* Taglia il contenuto che supera */
-  margin-top: 20px; /* Spazio sopra la barra */
+  width: 80%;
+  height: 4px;
+  background: #555;
+  margin-bottom: 10px;
+  position: relative;
 }
 
 .progress {
-  height: 100%; /* Riempie l'intera altezza della barra */
-  background-color: #007bff; /* Colore della barra (blu) */
-  transition: width 0.2s ease-in-out; /* Animazione fluida */
+  height: 100%;
+  background: var(--blandoBlue);
+  transition: width 0.2s ease-in-out;
 }
-
 @keyframes spin {
   to {
     transform: rotate(360deg);

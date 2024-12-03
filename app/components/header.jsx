@@ -4,6 +4,7 @@ import React, { useEffect, useRef, forwardRef } from "react";
 
 import gsap from "gsap";
 import ScrollTrigger from "gsap/ScrollTrigger";
+import Loader from "./Loader";
 import HeaderCenterTitle from "./HeaderCenterTitle";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -23,7 +24,7 @@ const Header = forwardRef(
         videoRef.current.currentTime = 0; // Assicura che il video inizi dal primo frame
         setCurrentFrame(0);
       }
-    }, []);
+    }, [setCurrentFrame]);
 
     useEffect(() => {
       if (!videoRef.current || !ref?.current) return;
@@ -81,16 +82,14 @@ const Header = forwardRef(
     }, [milestones, totalFrames, fps]);
 
     return (
-      <header
-        ref={ref} // Usa il ref passato
-        className="relative w-screen h-screen bg-gray-200"
-      >
+      <header ref={ref} className="relative w-screen h-screen bg-gray-200">
         <HeaderCenterTitle
           ref={headerCenterTitleRef}
           headerMoreInfo={headerMoreInfo}
           headerTeamInfo={headerTeamInfo}
           currentFrame={currentFrame} // Passa il frame corrente
           milestones={milestones}
+          alignment="center" // Allineamento centrato
         />
         <video
           ref={videoRef}
@@ -100,6 +99,8 @@ const Header = forwardRef(
           muted
           className="absolute top-0 left-0 w-full h-full object-cover"
         />
+        {/* Aggiungi il Loader */}
+        <Loader videoRef={videoRef} />
       </header>
     );
   }

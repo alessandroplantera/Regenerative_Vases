@@ -326,7 +326,7 @@ const SecondSection = ({ secondSectionRef, scrollToTop }) => {
     <section className="relative w-screen h-screen bg-gray-200 overflow-hidden flex justify-center items-center">
       <div className="absolute inset-0 z-100">
         <p
-          className="absolute bottom-10 right-0 p-4 text-blandoBlue underline cursor-pointer text-center z-10"
+          className="absolute top-10 right-10 p-4 text-blandoBlue underline cursor-pointer text-center z-10"
           onClick={scrollToTop}
         >
           Go Up
@@ -336,7 +336,7 @@ const SecondSection = ({ secondSectionRef, scrollToTop }) => {
         <HeaderCenterTitle
           ref={headerCenterTitleRef}
           showScrollText={false}
-          titleVPosition="2vh"
+          alignment="top" // Allineamento in alto
         />{" "}
       </div>
       <canvas ref={canvasRef} className="absolute inset-0 w-full h-full z-0" />

@@ -1,21 +1,19 @@
 "use client";
+
 import React, { useEffect, useState } from "react";
 
-const Loader = ({ videoRef, onLoaded }) => {
+const Loader = ({ videoRef }) => {
   const [progress, setProgress] = useState(0);
+  const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
     if (!videoRef?.current) {
-      console.error("Loader: videoRef is not available.", {
-        videoRef,
-        current: videoRef?.current,
-      });
+      console.error("Loader: videoRef is not available.");
       return;
     }
 
     const videoElement = videoRef.current;
 
-    // Funzione per monitorare il caricamento del video
     const handleProgress = () => {
       if (videoElement.buffered.length > 0) {
         const bufferedEnd = videoElement.buffered.end(0);
@@ -24,34 +22,26 @@ const Loader = ({ videoRef, onLoaded }) => {
       }
     };
 
-    // Promessa per attendere che il video sia pronto
-    const loadVideoAsync = async () => {
-      try {
-        await new Promise((resolve, reject) => {
-          videoElement.addEventListener("progress", handleProgress);
-          videoElement.addEventListener("canplaythrough", resolve);
-          videoElement.addEventListener("error", reject);
-        });
-
-        setProgress(100); // Segna il caricamento come completato
-        onLoaded(); // Comunica al genitore che il caricamento è terminato
-      } catch (error) {
-        console.error("Error loading video:", error);
-      }
+    const handleCanPlayThrough = () => {
+      setProgress(100);
+      setTimeout(() => setIsLoaded(true), 500); // Aggiunge una piccola animazione prima di nascondere il loader
     };
 
-    // Avvia il caricamento del video
-    loadVideoAsync();
+    videoElement.addEventListener("progress", handleProgress);
+    videoElement.addEventListener("canplaythrough", handleCanPlayThrough);
 
-    // Cleanup degli eventi
     return () => {
       videoElement.removeEventListener("progress", handleProgress);
-      videoElement.removeEventListener("canplaythrough", onLoaded);
+      videoElement.removeEventListener("canplaythrough", handleCanPlayThrough);
     };
-  }, [onLoaded, videoRef]);
+  }, [videoRef]);
+
+  if (isLoaded) {
+    return null; // Rimuove il loader quando il video è caricato
+  }
 
   return (
-    <div className="loader">
+    <div className="loader-overlay">
       <div className="progress-bar">
         <div
           className="progress"
