@@ -20,6 +20,43 @@ const Header = forwardRef(
     const headerCenterTitleRef = useRef(null);
     const [isEffectActive, setIsEffectActive] = useState(false); // Stato per gestire l'effetto
 
+    const text =
+      "Interdisciplinary collaborative project of research, product design, communication and interaction curated by STUDIO BLANDO";
+
+    const words = text.split(" "); // Dividi il testo in parole
+    const [currentWordIndex, setCurrentWordIndex] = useState(0); // Indice della parola corrente
+    const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 }); // Posizione del cursore
+    const [isCursorVisible, setIsCursorVisible] = useState(false); // Stato visibilità cursore
+
+    // Aggiorna la posizione del cursore e l'indice della parola
+    const handleMouseMove = (event) => {
+      setCursorPosition({ x: event.clientX, y: event.clientY });
+
+      // Aggiorna l'indice della parola in modo incrementale
+      setCurrentWordIndex((prevIndex) => (prevIndex + 1) % words.length);
+    };
+    useEffect(() => {
+      const handleMouseEnter = () => setIsCursorVisible(true);
+      const handleMouseLeave = () => setIsCursorVisible(false);
+
+      const headerElement = document.getElementById("header");
+
+      if (headerElement) {
+        headerElement.addEventListener("mousemove", handleMouseMove);
+        headerElement.addEventListener("mouseenter", handleMouseEnter);
+        headerElement.addEventListener("mouseleave", handleMouseLeave);
+      }
+
+      // Cleanup
+      return () => {
+        if (headerElement) {
+          headerElement.removeEventListener("mousemove", handleMouseMove);
+          headerElement.removeEventListener("mouseenter", handleMouseEnter);
+          headerElement.removeEventListener("mouseleave", handleMouseLeave);
+        }
+      };
+    }, [words.length]);
+
     // Funzione per attivare/disattivare l'effetto
     const toggleEffect = () => {
       setIsEffectActive((prev) => !prev); // Alterna lo stato
@@ -55,6 +92,18 @@ const Header = forwardRef(
           milestones={milestones}
           alignment="center" // Allineamento centrato
         />
+        {/* Testo dinamico vicino al cursore */}
+        {isCursorVisible && (
+          <div
+            className="absolute pointer-events-none text-green-500 font-bold"
+            style={{
+              top: cursorPosition.y + 20, // Offset verticale
+              left: cursorPosition.x + 20, // Offset orizzontale
+            }}
+          >
+            {words[currentWordIndex]}
+          </div>
+        )}
         <video
           ref={videoRef}
           src="/videos/input.mp4"
