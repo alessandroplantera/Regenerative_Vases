@@ -1,6 +1,7 @@
 import localFont from "next/font/local";
 import "./globals.css";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import CustomCursor from "./components/CustomCursor"; // Importa il cursore
 
 const sAntique = localFont({
   src: "./fonts/SAntique.otf",
@@ -34,6 +35,7 @@ export default function RootLayout({ children }) {
       <body
         className={`${sAntique.variable} ${sRegular.variable} ${sThin.variable} ${ppbold.variable} ${ppregular.variable} antialiased`}
       >
+        <CustomCursor /> {/* Usa il cursore */}
         {children}
         <SpeedInsights />
       </body>

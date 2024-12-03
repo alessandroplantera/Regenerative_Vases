@@ -76,9 +76,6 @@ const HeaderCenterTitle = forwardRef(
         }}
       >
         <h2 id="header-main-title">{title}</h2>
-        {subtitle && <p id="header-subtitle">{subtitle}</p>}
-        {subsubtitle && <p id="header-subtitle">{subsubtitle}</p>}
-        {subsubsubtitle && <p id="header-subtitle">{subsubsubtitle}</p>}
         <p id="header-year">{year}</p>
         {showScrollText && (
           <p id="header-scroll-text">scroll to explore more</p>

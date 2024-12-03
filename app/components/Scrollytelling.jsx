@@ -14,7 +14,6 @@ const Scrollytelling = () => {
   const [currentFrame, setCurrentFrame] = useState(0); // Stato per il frame corrente
   const [isLoaded, setIsLoaded] = useState(false); // Stato per sapere se il video è caricato
   const headerRef = useRef(null); // Riferimento all'header
-  const [showTimeline, setShowTimeline] = useState(true); // Stato per la visibilità della timeline
   const secondSectionRef = useRef(null); // Riferimento alla seconda sezione
   const totalFrames = 1560;
   const fps = 60;
@@ -100,22 +99,6 @@ const Scrollytelling = () => {
     duration: 1,
   });
 
-  // Gestione della visibilità della timeline
-  useEffect(() => {
-    if (!secondSectionRef.current) return;
-
-    const timelineTrigger = ScrollTrigger.create({
-      trigger: secondSectionRef.current,
-      start: "top center",
-      onEnter: () => setShowTimeline(false),
-      onLeaveBack: () => setShowTimeline(true),
-    });
-
-    return () => {
-      timelineTrigger.kill();
-    };
-  }, [secondSectionRef]);
-
   return (
     <div>
       <Header
@@ -125,13 +108,6 @@ const Scrollytelling = () => {
         milestones={milestones}
         fps={fps}
         currentFrame={currentFrame} // Passa lo stato al componente Header
-      />
-      <Timeline
-        currentFrame={currentFrame}
-        milestones={milestones}
-        totalFrames={totalFrames}
-        scrollToFrame={scrollToFrame} // Passa la funzione per lo scroll
-        isVisible={showTimeline}
       />
       <div ref={secondSectionRef} className="second-section">
         <SecondSection

@@ -18,6 +18,26 @@ html {
 body {
   color: var(--foreground);
   background: var(--background);
+  cursor: none; /* Nasconde il cursore standard */
+}
+
+/* Stile del pallino personalizzato */
+@media (min-width: 750px) {
+  #custom-cursor {
+    position: fixed;
+    width: 1vw; /* Dimensione del pallino */
+    height: 1vw;
+    background-color: #00FF33;
+    border-radius: 50%;
+    pointer-events: none; /* Assicura che non blocchi interazioni */
+    z-index: 9999; /* Porta il cursore sopra altri elementi */
+    transform: translate(-50%, -50%);
+    transition: transform 0.1s ease-in-out; /* Animazione morbida */
+  }
+}
+.effect-difference {
+  mix-blend-mode: difference;
+  transition: all 0.3s ease-in-out;
 }
 .scrollytelling-section {
   position: relative;
@@ -121,7 +141,8 @@ header {
   margin-bottom: 1rem;
 }
 .loader-overlay {
-  position: absolute;
+  position: fixed;
+  overflow: hidden;
   top: 0;
   left: 0;
   width: 100%;
