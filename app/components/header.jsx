@@ -120,7 +120,7 @@ const Header = forwardRef(
             fontSizeYear="4rem"
           />
         </div>
-        <div className="absolute text-3xl left-1/2 transform -translate-x-1/2 bottom-10 -translate-y-1/2 z-10 text-center text-blandoBlue leading-8">
+        <div className="absolute text-3xl left-1/2 transform -translate-x-1/2 bottom-10 -translate-y-20 z-10 text-center text-blandoBlue leading-8">
           <p>
             scroll to see the <br></br> vases
           </p>
