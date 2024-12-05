@@ -60,6 +60,7 @@ const SecondSection = ({ secondSectionRef, scrollToTop }) => {
       );
       // Scena
       const scene = new THREE.Scene();
+      const isMobile = window.innerWidth < 768;
       const camera = new THREE.PerspectiveCamera(
         35,
         window.innerWidth / window.innerHeight,
@@ -81,7 +82,7 @@ const SecondSection = ({ secondSectionRef, scrollToTop }) => {
       renderer.physicallyCorrectLights = true;
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
       renderer.toneMappingExposure = 1.5; // Aumenta l'esposizione globale
-      renderer.outputEncoding = THREE.sRGBEncoding;
+      // renderer.outputEncoding = THREE.sRGBEncoding;
 
       // Gestione del ridimensionamento della finestra
       window.addEventListener("resize", () => {
@@ -190,7 +191,7 @@ const SecondSection = ({ secondSectionRef, scrollToTop }) => {
       // Carica la matcap texture
       const textureLoader = new THREE.TextureLoader();
       const matcapLikeTexture = textureLoader.load("matcap.png"); // Assicurati che il percorso sia corretto
-      matcapLikeTexture.encoding = THREE.sRGBEncoding;
+      // matcapLikeTexture.encoding = THREE.sRGBEncoding;
 
       // Luce ambientale
       const ambientLight = new THREE.AmbientLight(0xffffff, 1);
@@ -226,7 +227,13 @@ const SecondSection = ({ secondSectionRef, scrollToTop }) => {
         "vases.obj",
         (obj) => {
           modelRef.current = obj;
-          obj.scale.set(0.05, 0.05, 0.05);
+          if (!isMobile) {
+            obj.scale.set(0.05, 0.05, 0.05);
+            console.log(isMobile);
+          } else {
+            obj.scale.set(0.03, 0.03, 0.03);
+            console.log(isMobile);
+          }
           // obj.position.set(0, -0.5, 0);
 
           const objects = [];
@@ -279,50 +286,6 @@ const SecondSection = ({ secondSectionRef, scrollToTop }) => {
 
       // Inizia l'animazione
       animate();
-
-      // // Crea una nuova istanza di dat.GUI
-      // const gui = new dat.GUI();
-      // const guiContainer = gui.domElement;
-      // guiContainer.style.position = "absolute";
-      // guiContainer.style.top = "10px";
-      // guiContainer.style.left = "10px";
-      // // Oggetto per i parametri delle luci
-      // const lightParams = {
-      //   spotLightIntensity: 50,
-      //   spotLightDistance: 10,
-      //   ambientLightIntensity: 0,
-      // };
-
-      // // Aggiungi controlli per l'intensità della luce spot
-      // gui
-      //   .add(lightParams, "spotLightIntensity", 0, 50)
-      //   .name("Intensità Luce Spot")
-      //   .onChange((value) => {
-      //     spotLight.intensity = value;
-      //   });
-      // gui
-      //   .add(lightParams, "spotLightDistance", 0, 50)
-      //   .name("Distanza Luce Spot")
-      //   .onChange((value) => {
-      //     spotLight.distance = value;
-      //   });
-      // // Aggiungi controlli per l'intensità della luce ambientale
-      // gui
-      //   .add(lightParams, "ambientLightIntensity", 0, 5)
-      //   .name("Intensità Luce Ambientale")
-      //   .onChange((value) => {
-      //     ambientLight.intensity = value;
-      //   });
-      // // Aggiungi controllo per l'intensità dell'emissione
-      // gui
-      //   .add(materialParams, "emissiveIntensity", 0, 10)
-      //   .name("Emissive")
-      //   .onChange((value) => {
-      //     // Aggiorna l'intensità emissiva di tutti gli oggetti
-      //     objectsRef.current.forEach((obj) => {
-      //       obj.material.emissiveIntensity = value;
-      //     });
-      //   });
       // Cleanup
     };
     init();
@@ -336,52 +299,75 @@ const SecondSection = ({ secondSectionRef, scrollToTop }) => {
 
   // HTML Injection
   return (
-    <section className="relative w-screen h-screen bg-gray-200 overflow-hidden flex justify-center items-center">
-      <canvas ref={canvasRef} className="absolute inset-0 w-full h-full z-0" />
+    <section className="relative w-screen h-screen bg-gray-200 overflow-hidden flex justify-center items-center z-0">
+      <div className="absolute inset-0 w-full h-full z-20">
+        <canvas ref={canvasRef} className="inset-0 w-full h-full" />
+      </div>
       {currentInfo ? (
-        <div className="absolute bottom-10 text-center p-4 text-blandoBlue w-2/6">
-          <p className="text-5xl mb-2">{currentInfo.name}</p>
-          <hr className="border-blandoBlue my-2 w-full mx-auto" />
-          <div className="flex justify-between text-lg w-full mt-4">
-            <div className="pr-20">
-              <p className="font-semibold text-left">Dimensions</p>
-              {currentInfo.dimensions.map((dim, index) => (
-                <p key={index} className="text-left">
-                  {dim}
-                </p>
-              ))}
-            </div>
-            <div>
-              <p className="font-semibold text-left">Weight</p>
-              <p className="text-left">{currentInfo.weight}</p>
-            </div>
-          </div>
-          <div className="flex flex-col justify-between text-lg w-full mt-4">
-            <p className="font-semibold text-left">Cave Position</p>
-            <p className="text-left">{currentInfo.position}</p>
-          </div>
-          <hr className="border-blandoBlue my-2 w-full mx-auto" />
-          <div
-            className="mt-5 flex items-center place-content-center mx-auto justify-center h-12 w-3/6"
-            style={{
-              borderRadius: "100px",
-              border: "1px solid var(--blandoBlue)",
-              transition: "background-color 0.3s ease",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = "var(--blandoBlue)";
-              e.currentTarget.style.color = "var(--foreground)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = "transparent";
-              e.currentTarget.style.color = "var(--blandoBlue)";
-            }}
+        <>
+          {/* Testo posizionato dietro il canvas */}
+          <p
+            className="
+              absolute left-1/2
+              top-1/4 md:top-1/2
+              transform -translate-x-1/2
+              md:-translate-y-3/4
+              text-[7rem] md:text-[25rem]
+              text-blandoBlue
+              z-0
+            "
+            style={{ fontFamily: "var(--font-ppregular)" }}
           >
-            <p className="text-center mb-1" style={{ fontSize: "24px" }}>
-              Download Catalogue
-            </p>
+            {currentInfo.name}
+          </p>
+
+          <div className="absolute bottom-10 text-center p-4 text-blandoBlue sm:w-4/6 md:w-3/6 lg:w-2/6 z-20">
+            <p className="text-5xl mb-2">{currentInfo.name}</p>
+            <hr className="border-blandoBlue my-2 w-full mx-auto border-0" />
+            <div className="flex justify-between text-lg w-full mt-4">
+              <div className="pr-20">
+                <p className="font-semibold text-left">Dimensions</p>
+                {currentInfo.dimensions.map((dim, index) => (
+                  <p key={index} className="text-left">
+                    {dim}
+                  </p>
+                ))}
+              </div>
+              <div>
+                <p className="font-semibold text-left">Weight</p>
+                <p className="text-left">{currentInfo.weight}</p>
+              </div>
+            </div>
+            <div className="flex flex-col justify-center text-lg w-full mt-4 text-center">
+              <p className="font-semibold">Cave Position</p>
+              <p className="">{currentInfo.position}</p>
+            </div>
+            <hr className="border-blandoBlue my-2 w-full mx-auto" />
+            <div
+              className="mt-5 flex items-center place-content-center mx-auto justify-center h-12 sm:w-4/6 md:w-3/6 lg:w-3/6"
+              style={{
+                borderRadius: "100px",
+                border: "1px solid var(--blandoBlue)",
+                transition: "background-color 0.3s ease",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = "var(--blandoBlue)";
+                e.currentTarget.style.color = "var(--foreground)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = "transparent";
+                e.currentTarget.style.color = "var(--blandoBlue)";
+              }}
+            >
+              <p
+                className="text-center mb-1"
+                style={{ fontSize: "1.5rem", wordWrap: "none" }}
+              >
+                Download Catalogue
+              </p>
+            </div>
           </div>
-        </div>
+        </>
       ) : (
         <div className="absolute bottom-10 text-center text-lg">
           <p>

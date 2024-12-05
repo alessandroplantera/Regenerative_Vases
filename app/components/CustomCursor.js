@@ -19,9 +19,11 @@ const CustomCursor = () => {
     interactiveElements.forEach((element) => {
       element.addEventListener("mouseenter", () => {
         cursor.style.transform = "scale(1.5)";
+        cursor.style.mixBlendMode = "difference";
       });
       element.addEventListener("mouseleave", () => {
         cursor.style.transform = "scale(1)";
+        cursor.style.mixBlendMode = "normal";
       });
     });
 
