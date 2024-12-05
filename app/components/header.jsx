@@ -20,6 +20,7 @@ const Header = forwardRef(
     const headerTeamInfo = useRef(null);
     const headerCenterTitleRef = useRef(null);
     const [isEffectActive, setIsEffectActive] = useState(false); // Stato per gestire l'effetto
+    const [videoLoaded, setVideoLoaded] = useState(false); // Stato per il Loader
 
     const text =
       "Interdisciplinary collaborative project of research, product design, communication and interaction curated by STUDIO BLANDO";
@@ -63,23 +64,48 @@ const Header = forwardRef(
       setIsEffectActive((prev) => !prev); // Alterna lo stato
     };
 
+    // Gestione degli eventi del video
     useEffect(() => {
-      if (!videoRef.current) return;
-
-      // Aggiungi un event listener manualmente
       const videoElement = videoRef.current;
-      videoElement.addEventListener("click", toggleEffect);
+
+      if (!videoElement) return;
+
+      // Event listener per quando il video è pronto per essere riprodotto
+      const handleCanPlayThrough = () => {
+        setVideoLoaded(true);
+      };
+
+      // Event listener per gestire il click sul video
+      const handleClick = () => {
+        toggleEffect();
+      };
+
+      videoElement.addEventListener("canplaythrough", handleCanPlayThrough);
+      videoElement.addEventListener("click", handleClick);
 
       // Cleanup
       return () => {
-        videoElement.removeEventListener("click", toggleEffect);
+        videoElement.removeEventListener(
+          "canplaythrough",
+          handleCanPlayThrough
+        );
+        videoElement.removeEventListener("click", handleClick);
       };
     }, []);
+
+    // Riproduci il video e reimposta il frame corrente al montaggio
     useEffect(() => {
-      if (videoRef.current) {
-        videoRef.current.currentTime = 0; // Assicura che il video inizi dal primo frame
-        videoRef.current.play(); // Avvia il video
-        setCurrentFrame(0);
+      const videoElement = videoRef.current;
+      if (videoElement) {
+        videoElement.currentTime = 0; // Assicura che il video inizi dal primo frame
+        videoElement
+          .play()
+          .then(() => {
+            setCurrentFrame(0);
+          })
+          .catch((error) => {
+            console.error("Errore nell'avvio del video:", error);
+          }); // Avvia il video
       }
     }, [setCurrentFrame]);
 
@@ -111,18 +137,9 @@ const Header = forwardRef(
             {words[currentWordIndex]}
           </div>
         )}
-        <iframe
-          ref={videoRef}
-          src="https://player.vimeo.com/video/1036424035?title=0&amp;byline=0&amp;portrait=0&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479"
-          allow="autoplay; fullscreen; picture-in-picture"
-          allowFullScreen
-          className={`absolute top-0 left-0 w-full h-full object-cover ${
-            isEffectActive ? "effect-difference" : ""
-          }`} // Applica la classe dinamicamente
-        ></iframe>
         <video
           ref={videoRef}
-          src="/videos/input.mp4"
+          src="https://res.cloudinary.com/dpzluyel4/video/upload/v1733417740/input_aktxqa.mp4"
           autoPlay
           loop
           preload="auto"
@@ -131,9 +148,9 @@ const Header = forwardRef(
           className={`absolute top-0 left-0 w-full h-full object-cover ${
             isEffectActive ? "effect-difference" : ""
           }`} // Applica la classe dinamicamente
-        />
+        ></video>
         {/* Aggiungi il Loader */}
-        <Loader videoRef={videoRef} />
+        {!videoLoaded && <Loader videoRef={videoRef} />}
       </header>
     );
   }

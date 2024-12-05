@@ -339,7 +339,7 @@ const SecondSection = ({ secondSectionRef, scrollToTop }) => {
               </div>
             </div>
             <div className="flex flex-col justify-center text-lg w-full mt-4 text-center">
-              <p className="font-semibold">Cave Position</p>
+              <p className="font-semibold">Quarry Position</p>
               <p className="">{currentInfo.position}</p>
             </div>
             <hr className="border-blandoBlue my-2 w-full mx-auto" />
