@@ -111,6 +111,15 @@ const Header = forwardRef(
             {words[currentWordIndex]}
           </div>
         )}
+        <iframe
+          ref={videoRef}
+          src="https://player.vimeo.com/video/1036424035?title=0&amp;byline=0&amp;portrait=0&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479"
+          allow="autoplay; fullscreen; picture-in-picture"
+          allowFullScreen
+          className={`absolute top-0 left-0 w-full h-full object-cover ${
+            isEffectActive ? "effect-difference" : ""
+          }`} // Applica la classe dinamicamente
+        ></iframe>
         <video
           ref={videoRef}
           src="/videos/input.mp4"
