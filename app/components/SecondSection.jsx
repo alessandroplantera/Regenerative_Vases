@@ -324,7 +324,7 @@ const SecondSection = ({ secondSectionRef, scrollToTop }) => {
           <div className="absolute bottom-10 text-center p-4 text-blandoBlue sm:w-4/6 md:w-3/6 lg:w-2/6 z-20">
             <p className="text-5xl mb-2">{currentInfo.name}</p>
             <hr className="border-blandoBlue my-2 w-full mx-auto" />
-            <div className="flex justify-between text-lg w-full mt-4">
+            <div className="flex justify-between text-lg w-full mt-2">
               <div className="pr-20">
                 <p className="font-semibold text-left">Dimensions</p>
                 {currentInfo.dimensions.map((dim, index) => (
@@ -338,7 +338,7 @@ const SecondSection = ({ secondSectionRef, scrollToTop }) => {
                 <p className="text-left">{currentInfo.weight}</p>
               </div>
             </div>
-            <div className="flex flex-col justify-center text-lg w-full mt-4 text-center">
+            <div className="flex flex-col justify-center text-lg w-full mt-0 text-center">
               <p className="font-semibold">Quarry Position</p>
               <p className="">{currentInfo.position}</p>
             </div>
@@ -352,7 +352,7 @@ const SecondSection = ({ secondSectionRef, scrollToTop }) => {
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.backgroundColor = "var(--blandoBlue)";
-                e.currentTarget.style.color = "var(--foreground)";
+                e.currentTarget.style.color = "var(--background)";
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.backgroundColor = "transparent";
