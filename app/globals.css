@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 :root {
-  --background: #e5e5e5;
+  --background: #C8C3C0;
   --foreground: #171717;
   --blandoBlue: #001eff;
   --font-antique: var(--font-s-antique), serif;
@@ -170,13 +170,6 @@ header {
   }
   50% {
     opacity: 0.5;
-  }
-}
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-    --blandoBlue: #001eff;
   }
 }
 /* Smartphone */

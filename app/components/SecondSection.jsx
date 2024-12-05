@@ -299,7 +299,7 @@ const SecondSection = ({ secondSectionRef, scrollToTop }) => {
 
   // HTML Injection
   return (
-    <section className="relative w-screen h-screen bg-gray-200 overflow-hidden flex justify-center items-center z-0">
+    <section className="relative w-screen h-screen bg-background overflow-hidden flex justify-center items-center z-0">
       <div className="absolute inset-0 w-full h-full z-20">
         <canvas ref={canvasRef} className="inset-0 w-full h-full" />
       </div>
@@ -323,7 +323,7 @@ const SecondSection = ({ secondSectionRef, scrollToTop }) => {
 
           <div className="absolute bottom-10 text-center p-4 text-blandoBlue sm:w-4/6 md:w-3/6 lg:w-2/6 z-20">
             <p className="text-5xl mb-2">{currentInfo.name}</p>
-            <hr className="border-blandoBlue my-2 w-full mx-auto border-0" />
+            <hr className="border-blandoBlue my-2 w-full mx-auto" />
             <div className="flex justify-between text-lg w-full mt-4">
               <div className="pr-20">
                 <p className="font-semibold text-left">Dimensions</p>

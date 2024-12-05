@@ -110,7 +110,7 @@ const Header = forwardRef(
     }, [setCurrentFrame]);
 
     return (
-      <header ref={ref} className="relative w-screen h-screen bg-gray-200">
+      <header ref={ref} className="relative w-screen h-screen bg-background">
         <div className="absolute left-1/2 transform -translate-x-1/2 top-1/2 -translate-y-1/2 z-10">
           {/* Titolo centrato */}
           <HeaderCenterTitle
@@ -139,7 +139,7 @@ const Header = forwardRef(
         )}
         <video
           ref={videoRef}
-          src="https://res.cloudinary.com/dpzluyel4/video/upload/v1733417740/input_aktxqa.mp4"
+          src="https://res.cloudinary.com/dpzluyel4/video/upload/q_auto:eco/v1733417740/input_aktxqa.mp4"
           autoPlay
           loop
           preload="auto"
