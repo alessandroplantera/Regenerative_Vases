@@ -5,7 +5,8 @@ import gsap from "gsap";
 import ScrollTrigger from "gsap/ScrollTrigger";
 import Header from "./header";
 import SecondSection from "./SecondSection";
-import useScrollToTopOnTrigger from "./hooks/useScrollToTopOnTrigger"; // Importa il tuo hook
+import HeaderCenterTitle from "./HeaderCenterTitle";
+import ContactInfoToggle from "./ContactInfoToggle"; // Assicurati che il percorso sia corretto
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -15,6 +16,7 @@ const Scrollytelling = () => {
   const headerRef = useRef(null); // Riferimento all'header
   const secondSectionRef = useRef(null); // Riferimento alla seconda sezione
   const totalFrames = 1560;
+  const [showTitle, setShowTitle] = useState(false);
   const fps = 60;
   const milestones = useMemo(
     () => [
@@ -26,80 +28,58 @@ const Scrollytelling = () => {
     ],
     [totalFrames]
   );
+  useEffect(() => {
+    if (secondSectionRef.current) {
+      const trigger = ScrollTrigger.create({
+        trigger: secondSectionRef.current,
+        start: "top 90%",
+        end: "bottom center",
+        onEnter: () => setShowTitle(true),
+        onLeaveBack: () => setShowTitle(false),
+        onLeave: () => setShowTitle(false),
+        onEnterBack: () => setShowTitle(true),
+      });
 
+      // Pulizia
+      return () => {
+        trigger.kill();
+      };
+    }
+  }, []);
   const handleLoaded = () => {
     setIsLoaded(true); // Aggiorna lo stato quando il video è caricato
   };
 
-  // Funzione per scrollare in cima
-  const scrollToTop = () => {
-    if (headerRef.current) {
-      gsap.to(window, {
-        scrollTo: { y: headerRef.current.offsetTop },
-        duration: 1,
-        ease: "power2.inOut",
-        onComplete: () => {
-          ScrollTrigger.refresh();
-        },
-      });
-    }
-  };
-
-  // Funzione per scrollare a un frame specifico
-  const scrollToFrame = (frameIndex) => {
-    if (!headerRef.current) {
-      console.error("Header reference is not defined.");
-      return;
-    }
-
-    const progress = frameIndex / (totalFrames - 1); // Progresso target del frame
-    if (progress < 0 || progress > 1) {
-      console.error("Invalid progress value:", progress);
-      return;
-    }
-
-    const trigger = ScrollTrigger.getAll().find(
-      (t) => t.vars.trigger === headerRef.current
-    );
-
-    if (!trigger) {
-      console.error("No ScrollTrigger found for headerRef.");
-      return;
-    }
-
-    const triggerStart = trigger.start;
-    const triggerEnd = trigger.end;
-
-    // Calcola la posizione di scroll target basandoti sul progresso
-    const targetScroll = triggerStart + progress * (triggerEnd - triggerStart);
-
-    console.log(`Scrolling to frame ${frameIndex}`);
-    console.log(`Calculated target scroll position: ${targetScroll}`);
-
-    gsap.to(window, {
-      scrollTo: { y: targetScroll },
-      duration: 1, // Durata della transizione
-      ease: "power2.inOut",
-      onComplete: () => {
-        ScrollTrigger.refresh(); // Assicurati che tutto sia sincronizzato
-      },
-    });
-  };
-
-  // Usa il custom hook per il trigger della SecondSection
-  useScrollToTopOnTrigger(headerRef, {
-    start: "top bottom",
-    end: "bottom top",
-    duration: 1,
-  });
-
-  useScrollToTopOnTrigger(secondSectionRef, {
-    start: "top 90%",
-    duration: 1,
-  });
-
   return (
     <div>
+      <div className="fixed top-0 left-0 w-full h-16 flex items-center justify-between p-4 my-5  z-50">
+        {/* Elemento a sinistra (può essere vuoto o contenere un logo) */}
+        <div className="text-blandoBlue flex flex-col text-left">
+          <ContactInfoToggle />
+        </div>
+        <div className="absolute left-1/2 transform -translate-x-1/2  mt-5">
+          {/* Titolo centrato */}
+          <HeaderCenterTitle
+            title="(re)generative vases"
+            year="2024"
+            fontSizeTitle="3rem"
+            fontSizeYear="1.5rem"
+            show={showTitle}
+          />
+        </div>
+        {/* Link "About" all'estrema destra */}
+        <p className="text-blandoBlue underline cursor-pointer">About</p>
+      </div>
+      <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50">
+        {/* Titolo centrato */}
+        <HeaderCenterTitle
+          title="(re)generative vases"
+          year="2024"
+          fontSizeTitle="6rem"
+          fontSizeYear="4rem"
+          show={true}
+        />
+      </div>
       <Header
         ref={headerRef} // Passa il riferimento all'header
         setCurrentFrame={setCurrentFrame}
@@ -111,7 +91,7 @@ const Scrollytelling = () => {
       <div ref={secondSectionRef} className="second-section">
         <SecondSection
           secondSectionRef={secondSectionRef}
-          scrollToTop={scrollToTop} // Passa la funzione
+          // scrollToTop={scrollToTop} // Passa la funzione
         />
       </div>
     </div>

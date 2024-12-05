@@ -47,17 +47,6 @@ header {
   height: 100dvh;
 }
 
-/* Stile per l'intero container in alto a sinistra */
-#header-center-title {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%); /* Trasla sia orizzontalmente che verticalmente */
-  width: auto; /* Adatta la larghezza al contenuto */
-  padding: 20px; /* Aggiungi un padding coerente */
-  z-index: 10; /* Assicurati che sia sopra al video */
-  text-align: center; /* Allinea il testo centralmente */
-}
 /* Stile per il logo */
 #header-logo {
   width: 80px;

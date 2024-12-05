@@ -5,6 +5,7 @@ import React, { useState, useEffect, useRef, forwardRef } from "react";
 import gsap from "gsap";
 import ScrollTrigger from "gsap/ScrollTrigger";
 import Loader from "./Loader";
+import ContactInfoToggle from "./ContactInfoToggle";
 import HeaderCenterTitle from "./HeaderCenterTitle";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -84,14 +85,20 @@ const Header = forwardRef(
 
     return (
       <header ref={ref} className="relative w-screen h-screen bg-gray-200">
-        <HeaderCenterTitle
-          ref={headerCenterTitleRef}
-          headerMoreInfo={headerMoreInfo}
-          headerTeamInfo={headerTeamInfo}
-          currentFrame={currentFrame} // Passa il frame corrente
-          milestones={milestones}
-          alignment="center" // Allineamento centrato
-        />
+        <div className="absolute left-1/2 transform -translate-x-1/2 top-1/2 -translate-y-1/2 z-10">
+          {/* Titolo centrato */}
+          <HeaderCenterTitle
+            title="(re)generative vases"
+            year="2024"
+            fontSizeTitle="6rem"
+            fontSizeYear="4rem"
+          />
+        </div>
+        <div className="absolute text-4xl left-1/2 transform -translate-x-1/2 bottom-10 -translate-y-1/2 z-10 text-center text-blandoBlue leading-8">
+          <p>
+            scroll to see the <br></br> vases
+          </p>
+        </div>
         {/* Testo dinamico vicino al cursore */}
         {isCursorVisible && (
           <div
