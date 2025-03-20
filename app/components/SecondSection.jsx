@@ -301,50 +301,65 @@ const SecondSection = ({ secondSectionRef, scrollToTop }) => {
   return (
     <section className="relative w-screen h-screen bg-background overflow-hidden flex justify-center items-center z-0">
       <div className="absolute inset-0 w-full h-full z-20">
-        <canvas ref={canvasRef} className="inset-0 w-full h-full" />
+        <canvas
+          ref={canvasRef}
+          className="inset-0 w-full h-full md:-translate-y-[5%] sm:-translate-y-[18%] -translate-y-[18%]"
+        />
       </div>
       {currentInfo ? (
         <>
           {/* Testo posizionato dietro il canvas */}
-          <p
+          <div
             className="
-              absolute left-1/2
-              top-1/4 md:top-1/2
-              transform -translate-x-1/2
-              md:-translate-y-3/4
-              text-[7rem] md:text-[25rem]
+            absolute left-1/2 
+              lg:top-1/3 md:top-1/3 sm:top-1/3 top-1/4
+              transform -translate-x-1/2 
+              lg:-translate-y-1/2 md:-translate-y-1/2 sm:-translate-y-1/2 -translate-y-1/4
+              text-7xl lg:text-[20rem] md:text-[20rem] sm:text-[8rem] 
+              leading-[3.5rem] md:leading-[4rem] lg:leading-[4rem]
               text-blandoBlue
-              z-0
-            "
-            style={{ fontFamily: "var(--font-ppregular)" }}
+              z-0 gap-0"
           >
-            {currentInfo.name}
-          </p>
+            <p className="" style={{ fontFamily: "var(--font-ppregular)" }}>
+              {currentInfo.name}
+            </p>
+          </div>
 
           <div className="absolute bottom-10 text-center p-4 text-blandoBlue sm:w-4/6 md:w-3/6 lg:w-2/6 z-20">
-            <p className="text-5xl mb-2">{currentInfo.name}</p>
+            <p className="lg:text-3xl md:text-3xl sm:text-3xl text-3xl mb-2">
+              {currentInfo.name}
+            </p>
             <hr className="border-blandoBlue my-2 w-full mx-auto" />
             <div className="flex justify-between text-lg w-full mt-2">
               <div className="pr-20">
-                <p className="font-semibold text-left">Dimensions</p>
+                <p className="font-semibold text-left lg:text-base md:text-base sm:text-base text-base leading-4">
+                  dimensions:
+                </p>
                 {currentInfo.dimensions.map((dim, index) => (
-                  <p key={index} className="text-left">
+                  <p
+                    key={index}
+                    className="text-left lg:text-base md:text-base sm:text-base text-base leading-4"
+                  >
                     {dim}
                   </p>
                 ))}
               </div>
               <div>
-                <p className="font-semibold text-left">Weight</p>
-                <p className="text-left">{currentInfo.weight}</p>
+                <p className="font-semibold text-left lg:text-base md:text-base sm:text-base text-base leading-4">
+                  weight:
+                </p>
+                <p className="text-left lg:text-base md:text-base sm:text-base text-base leading-4">
+                  {currentInfo.weight}
+                </p>
               </div>
             </div>
-            <div className="flex flex-col justify-center text-lg w-full mt-0 text-center">
-              <p className="font-semibold">Quarry Position</p>
+            <div className="flex flex-col justify-center w-full text-left lg:text-base md:text-base sm:text-base text-base leading-4 mt-4 text-nowrap">
+              <p className="font-semibold">waste coordinates:</p>
               <p className="">{currentInfo.position}</p>
             </div>
             <hr className="border-blandoBlue my-2 w-full mx-auto" />
             <div
-              className="mt-5 flex items-center place-content-center mx-auto justify-center h-12 sm:w-4/6 md:w-3/6 lg:w-3/6"
+              className="mt-5 flex items-center place-content-center mx-auto justify-center h-12 sm:w-4/6 md:w-4/6 lg:w-4/6 w-5/6"
               style={{
                 borderRadius: "100px",
                 border: "1px solid var(--blandoBlue)",
@@ -359,10 +374,7 @@ const SecondSection = ({ secondSectionRef, scrollToTop }) => {
                 e.currentTarget.style.color = "var(--blandoBlue)";
               }}
             >
-              <p
-                className="text-center mb-1"
-                style={{ fontSize: "1.5rem", wordWrap: "none" }}
-              >
+              <p className="text-center mb-1 text-2xl md:text-2xl sm:text-2xl text-nowrap">
                 Download Catalogue
               </p>
             </div>

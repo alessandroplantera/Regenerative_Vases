@@ -25,7 +25,7 @@ const ppregular = localFont({
 });
 
 export const metadata = {
-  title: "Studio Blando",
+  title: "Regenerative Vases",
   description: "Regenerative design from waste materials",
 };
 
@@ -33,6 +33,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body
+        // suppressHydrationWarning
         className={`${sAntique.variable} ${sRegular.variable} ${sThin.variable} ${ppbold.variable} ${ppregular.variable} antialiased`}
       >
         <CustomCursor /> {/* Usa il cursore */}

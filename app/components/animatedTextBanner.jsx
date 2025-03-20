@@ -5,26 +5,20 @@ import Marquee from "react-fast-marquee";
 
 const Banner = () => {
   return (
-    <div className="fixed z-50 top-0 w-full overflow-hidden h-16 bg-background border-t-[1px] border-b-[1px] border-blandoBlue flex items-center">
+    <div className="fixed z-50 top-0 left-0 lg:h-15 md:h-15 sm:h-15 bg-background border-b-[1px] border-blandoBlue flex items-center">
       <Marquee
         gradient={false}
         speed={100} // Regola la velocità come preferisci
         pauseOnHover={false}
+        loop={0}
       >
-        <span
-          className="text-6xl md:text-6xl sm:text-4xl whitespace-nowrap text-blandoBlue mr-16"
+        <p
+          className="lg:text-4xl md:text-4xl sm:text-4xl whitespace-nowrap text-blandoBlue mr-16"
           style={{ fontFamily: "var(--font-ppregular)" }}
         >
           (re)generative vases — experimental generative approach and digital
           fabrication
-        </span>
-        <span
-          className="text-6xl md:text-6xl sm:text-4xl whitespace-nowrap text-blandoBlue mr-16"
-          style={{ fontFamily: "var(--font-ppregular)" }}
-        >
-          (re)generative vases — experimental generative approach and digital
-          fabrication
-        </span>
+        </p>
       </Marquee>
     </div>
   );

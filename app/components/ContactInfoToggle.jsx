@@ -26,7 +26,7 @@ const ContactInfoToggle = () => {
 
   return (
     <div
-      className="contact-info"
+      className="contact-info lg:text-base md:text-base sm:text-base"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
@@ -34,9 +34,17 @@ const ContactInfoToggle = () => {
         // Primo stato
         <div className="extended-info">
           <p>Get updated or order on demand</p>
-          <p className="underline">regenerativevases@gmail.com</p>
+          <a href="mailto:regenerativevases@gmail.com" className="underline">
+            regenerativevases@gmail.com
+          </a>
           <p>Discover more about the project</p>
-          <p className="underline">@regenerativevases</p>
+          <a
+            href="https://www.instagram.com/studio_blando/"
+            className="underline"
+            target="blank"
+          >
+            @regenerativevases
+          </a>
         </div>
       ) : (
         // Secondo stato

@@ -111,19 +111,12 @@ const Header = forwardRef(
 
     return (
       <header ref={ref} className="relative w-screen h-screen bg-background">
-        <div className="absolute left-1/2 transform -translate-x-1/2 top-1/2 -translate-y-1/2 z-10">
+        <div className="absolute w-full left-1/2 transform -translate-x-1/2 top-1/2 -translate-y-1/2 z-10">
           {/* Titolo centrato */}
-          <HeaderCenterTitle
-            title="(re)generative vases"
-            year="2024"
-            fontSizeTitle="6rem"
-            fontSizeYear="4rem"
-          />
+          <HeaderCenterTitle />
         </div>
-        <div className="absolute text-3xl left-1/2 transform -translate-x-1/2 bottom-10 -translate-y-20 z-10 text-center text-blandoBlue leading-8">
-          <p>
-            scroll to see the <br></br> vases
-          </p>
+        <div className="text-l lg:text-xl md:text-xl sm:text-xl bottom-10 lg:bottom-10 md:bottom-10 sm:bottom-15 absolute  left-1/2 transform -translate-x-1/2 z-10 text-center text-blandoBlue leading-8">
+          <p>scroll to see the vases</p>
         </div>
         {/* Testo dinamico vicino al cursore */}
         {isCursorVisible && (
