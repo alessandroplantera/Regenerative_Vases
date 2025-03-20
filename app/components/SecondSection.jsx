@@ -12,21 +12,21 @@ const SecondSection = ({ secondSectionRef, scrollToTop }) => {
   const originalEmissive = useRef(new Map());
   const vaseData = [
     {
-      id: "vase1",
+      id: "01_mini",
       name: "A.0528.20",
       dimensions: ["Mouth ø 18cm", "Mouth h 15cm", "Vase h 20cm"],
       weight: "13kg",
       position: "N45.88060418116533 E8.95080618178338",
     },
     {
-      id: "vase2",
+      id: "02_small",
       name: "P.1246.25",
       dimensions: ["Mouth ø 18cm", "Mouth h 15cm", "Vase h 20cm"],
       weight: "20kg",
       position: "N46.88060418116533 E8.95080618178338",
     },
     {
-      id: "vase3",
+      id: "03_medium",
       name: "C.0863.32",
       dimensions: ["Mouth ø 18cm", "Mouth h 15cm", "Vase h 20cm"],
       weight: "30kg",
@@ -39,29 +39,30 @@ const SecondSection = ({ secondSectionRef, scrollToTop }) => {
   });
 
   const materialParams = {
-    emissiveIntensity: 5,
+    emissiveIntensity: 2,
   };
   const lightParams = {
-    spotLightIntensity: 80,
+    spotLightIntensity: 0.5,
     spotLightColor: 0xffffff,
-    spotLightDistance: 40,
-    ambientLightIntensity: 0.5,
+    spotLightDistance: 180,
+    ambientLightIntensity: 4,
   };
 
   useEffect(() => {
-    let OBJLoader, OrbitControls, SpotLightHelper;
+    let scene, renderer, camera, controls, spotLightHelper;
     const init = async () => {
       // Importazioni dinamiche
       const { OrbitControls } = await import(
         "three/examples/jsm/controls/OrbitControls.js"
       );
-      const { OBJLoader } = await import(
-        "three/examples/jsm/loaders/OBJLoader.js"
+      const { GLTFLoader } = await import(
+        "three/examples/jsm/loaders/GLTFLoader.js"
       );
+
       // Scena
-      const scene = new THREE.Scene();
+      scene = new THREE.Scene();
       const isMobile = window.innerWidth < 768;
-      const camera = new THREE.PerspectiveCamera(
+      camera = new THREE.PerspectiveCamera(
         35,
         window.innerWidth / window.innerHeight,
         0.1,
@@ -70,7 +71,7 @@ const SecondSection = ({ secondSectionRef, scrollToTop }) => {
       camera.position.set(0, 2, 8);
 
       // Renderer
-      const renderer = new THREE.WebGLRenderer({
+      renderer = new THREE.WebGLRenderer({
         canvas: canvasRef.current,
         antialias: true,
         alpha: true,
@@ -81,7 +82,7 @@ const SecondSection = ({ secondSectionRef, scrollToTop }) => {
       renderer.shadowMap.type = THREE.PCFSoftShadowMap;
       renderer.physicallyCorrectLights = true;
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-      renderer.toneMappingExposure = 1.5; // Aumenta l'esposizione globale
+      renderer.toneMappingExposure = 1; // Aumenta l'esposizione globale
       // renderer.outputEncoding = THREE.sRGBEncoding;
 
       // Gestione del ridimensionamento della finestra
@@ -94,32 +95,114 @@ const SecondSection = ({ secondSectionRef, scrollToTop }) => {
       });
 
       // Configura i controlli
-      const controls = new OrbitControls(camera, renderer.domElement);
+      controls = new OrbitControls(camera, renderer.domElement);
       controls.enableDamping = true;
-      controls.enablePan = false;
-      controls.enableZoom = false;
+      controls.enablePan = true;
+      controls.enableZoom = true;
+      controls.autoRotate = true;
+      controls.autoRotateSpeed = 2;
+      controls.dampingFactor = 0.1;
+      controls.maxZoom = 0.5;
+      controls.maxDistance = 10;
+      controls.minDistance = 5;
 
       // Inizializza Raycaster e mouse
       const raycaster = new THREE.Raycaster();
       const mouse = new THREE.Vector2(0, 0); // Centro dello schermo
 
+      // Helper per evidenziare e ripristinare il materiale su un gruppo (vaso)
+      const highlightVaseGroup = (group) => {
+        group.traverse((child) => {
+          if (
+            child.isMesh &&
+            child.material &&
+            child.material.emissive // Assicurati che il materiale supporti l'emissive
+          ) {
+            // Salva il valore emissive originale se non già salvato
+            if (!child.userData.originalEmissive) {
+              child.userData.originalEmissive = child.material.emissive.clone();
+            }
+            child.material.emissive.set(0x404040);
+            child.material.emissiveIntensity = materialParams.emissiveIntensity;
+            child.material.needsUpdate = true;
+          }
+        });
+      };
+
+      const restoreVaseGroup = (group) => {
+        group.traverse((child) => {
+          if (
+            child.isMesh &&
+            child.material &&
+            child.material.emissive &&
+            child.userData.originalEmissive
+          ) {
+            child.material.emissive.copy(child.userData.originalEmissive);
+            child.material.needsUpdate = true;
+          }
+        });
+      };
+
+      // Funzione che esegue il raycasting e gestisce l'evidenziazione
       const updateCurrentObject = () => {
         if (!modelRef.current || objectsRef.current.length === 0) return;
 
-        // Aggiorna la matrice della telecamera
+        // Assicura che la camera abbia aggiornato la sua matrice
         camera.updateMatrixWorld(true);
 
-        // Imposta il raycaster dal centro dello schermo
-        raycaster.setFromCamera(mouse, camera);
+        // Usa il centro della viewport (0,0) per il raycaster
+        const mouseCenter = new THREE.Vector2(0, 0);
+        raycaster.setFromCamera(mouseCenter, camera);
 
-        // Ottieni le intersezioni
+        // Ottieni le intersezioni (controlla in profondità)
         const intersects = raycaster.intersectObjects(objectsRef.current, true);
 
-        if (intersects.length > 0) {
-          const closestObject = intersects[0].object;
-          // Recupera le informazioni dal dataset usando l'ID o il nome
-          const vaseInfo = vaseDataMap.get(closestObject.name);
+        // Raggruppa le intersezioni: risali nella gerarchia per ottenere il gruppo (vase)
+        const uniqueGroups = [];
+        const seen = new Set();
+        for (const inter of intersects) {
+          let obj = inter.object;
+          while (obj && !objectsRef.current.includes(obj)) {
+            obj = obj.parent;
+          }
+          if (obj && !seen.has(obj.uuid)) {
+            uniqueGroups.push(obj);
+            seen.add(obj.uuid);
+          }
+        }
 
+        // Il gruppo in primo piano (quello intersecato per primo) è quello da non oscurare
+        const highlightedGroup =
+          uniqueGroups.length > 0 ? uniqueGroups[0] : null;
+
+        // Per ogni gruppo (vaso) in objectsRef, regola il colore dei materiali
+        objectsRef.current.forEach((group) => {
+          group.traverse((child) => {
+            if (child.isMesh && child.material) {
+              // Salva il colore originale (usato per le texture) se non già salvato
+              if (!child.userData.originalColor) {
+                child.userData.originalColor = child.material.color.clone();
+              }
+              if (group === highlightedGroup) {
+                // Se il gruppo è quello intersecato, ripristina il colore originale
+                child.material.color.copy(child.userData.originalColor);
+              } else {
+                // Altrimenti, riduci la luminosità – per esempio, moltiplicando per 0.3
+                child.material.color
+                  .copy(child.userData.originalColor)
+                  .multiplyScalar(0.3);
+              }
+            }
+          });
+        });
+
+        // Aggiorna le informazioni se c'è un gruppo evidenziato
+        if (highlightedGroup) {
+          const lookupResult = vaseDataMap.get(highlightedGroup.name);
+          console.log("Highlighted group name:", highlightedGroup.name);
+          console.log("Lookup result:", lookupResult);
+
+          const vaseInfo = vaseDataMap.get(highlightedGroup.name);
           if (vaseInfo) {
             setCurrentInfo({
               name: vaseInfo.name,
@@ -130,170 +213,105 @@ const SecondSection = ({ secondSectionRef, scrollToTop }) => {
           } else {
             setCurrentInfo({
               name: "ENoENT",
-              dimensions: "",
+              dimensions: [],
               weight: "",
-              description: "",
+              position: "",
             });
           }
-          // Se l'oggetto attualmente evidenziato è diverso dal nuovo
-          if (highlightedObject.current !== closestObject) {
-            // Ripristina l'oggetto precedentemente evidenziato
-            if (highlightedObject.current) {
-              const original = originalEmissive.current.get(
-                highlightedObject.current
-              );
-              if (original) {
-                highlightedObject.current.material.emissive.copy(
-                  original.color
-                );
-                highlightedObject.current.material.emissiveIntensity =
-                  original.intensity;
-                highlightedObject.current.material.needsUpdate = true;
-              }
-            }
-
-            // Memorizza le proprietà originali se non già fatto
-            if (!originalEmissive.current.has(closestObject)) {
-              originalEmissive.current.set(closestObject, {
-                color: closestObject.material.emissive.clone(),
-                intensity: closestObject.material.emissiveIntensity,
-              });
-            }
-
-            // Applica l'effetto di emissione al nuovo oggetto
-            closestObject.material.emissive.set(0x404040); // Regola il colore secondo necessità
-            closestObject.material.emissiveIntensity =
-              materialParams.emissiveIntensity; // Regola l'intensità secondo necessità
-            closestObject.material.needsUpdate = true;
-
-            // Aggiorna la referenza dell'oggetto evidenziato
-            highlightedObject.current = closestObject;
-          }
         } else {
-          // Se nessun oggetto è intercettato, ripristina l'oggetto evidenziato
-          if (highlightedObject.current) {
-            const original = originalEmissive.current.get(
-              highlightedObject.current
-            );
-            if (original) {
-              highlightedObject.current.material.emissive.copy(original.color);
-              highlightedObject.current.material.emissiveIntensity =
-                original.intensity;
-              highlightedObject.current.material.needsUpdate = true;
-            }
-            highlightedObject.current = null;
-          }
-
           setCurrentInfo(null);
         }
       };
 
-      // Carica la matcap texture
-      const textureLoader = new THREE.TextureLoader();
-      const matcapLikeTexture = textureLoader.load("matcap.png"); // Assicurati che il percorso sia corretto
-      // matcapLikeTexture.encoding = THREE.sRGBEncoding;
-
-      // Luce ambientale
-      const ambientLight = new THREE.AmbientLight(0xffffff, 1);
+      // Luce ambientale e spot
+      const ambientLight = new THREE.AmbientLight(
+        0xffffff,
+        lightParams.ambientLightIntensity
+      );
       scene.add(ambientLight);
 
-      // Luce spot
       const spotLight = new THREE.SpotLight(lightParams.spotLightColor);
-      spotLight.position.set(0, 0, 0); // Abbassata a Y = 3
+      spotLight.position.set(0, 0, 0);
       spotLight.castShadow = true;
-      spotLight.angle = THREE.MathUtils.degToRad(20);
-      spotLight.distance = lightParams.spotLightDistance; // La luce ha effetto fino a 100 unità di distanza
-      spotLight.intensity = lightParams.spotLightIntensity; // Intensità della luce
-
-      // Imposta il target della luce spot
-      spotLight.target.position.set(0, 0, 0); // Punto fisso nella scena
+      spotLight.angle = THREE.MathUtils.degToRad(180);
+      spotLight.distance = lightParams.spotLightDistance;
+      spotLight.intensity = lightParams.spotLightIntensity;
+      spotLight.target.position.set(0, 0, 0);
       scene.add(spotLight.target);
-
-      // Aggiungi la luce alla scena
-      scene.add(spotLight);
-
-      // Aggiungi l'helper della luce spot
-      const spotLightHelper = new THREE.SpotLightHelper(spotLight);
-      // scene.add(spotLightHelper);
-
-      // Aggiungi la luce alla scena
       scene.add(spotLight);
       scene.add(camera);
       camera.add(spotLight);
 
-      // Carica il modello
-      const objLoader = new OBJLoader();
-      objLoader.load(
-        "vases.obj",
-        (obj) => {
-          modelRef.current = obj;
+      // (Opzionale) Helper per la luce spot
+      spotLightHelper = new THREE.SpotLightHelper(spotLight);
+      // scene.add(spotLightHelper);
+
+      // Caricamento del modello glTF
+      const gltfLoader = new GLTFLoader();
+      gltfLoader.load(
+        "/texturedVases.glb",
+        (gltf) => {
+          const model = gltf.scene;
+          modelRef.current = model;
           if (!isMobile) {
-            obj.scale.set(0.05, 0.05, 0.05);
-            console.log(isMobile);
+            model.scale.set(0.05, 0.05, 0.05);
           } else {
-            obj.scale.set(0.03, 0.03, 0.03);
-            console.log(isMobile);
+            model.scale.set(0.03, 0.03, 0.03);
           }
-          // obj.position.set(0, -0.5, 0);
 
-          const objects = [];
-          let vaseCounter = 1;
-
-          obj.traverse((child) => {
-            if (child.isMesh) {
-              // Applica MeshStandardMaterial con la matcap texture
-              child.name = `vase${vaseCounter++}`;
-
-              child.material = new THREE.MeshStandardMaterial({
-                map: matcapLikeTexture, // Usa 'map' per la texture diffusa
-                color: new THREE.Color(0xffffff), // Bianco di default
-                emissive: new THREE.Color(0x000000), // Aggiungi un po' di emissione
-                emissiveIntensity: materialParams.emissiveIntensity, // Regola l'intensità
-                roughness: 0.8,
-                metalness: 0.5,
+          // Si assume che ogni vaso sia un figlio diretto di model
+          const vaseGroups = [];
+          model.children.forEach((child, index) => {
+            if (child.isMesh || child.isGroup) {
+              // Assegna un nome se non presente (es. "vase1", "vase2", …)
+              if (!child.name || child.name === "") {
+                child.name = `vase${index + 1}`;
+              }
+              vaseGroups.push(child);
+              // Per ogni mesh interna al gruppo, abilita le ombre e salva il valore emissive originale
+              child.traverse((mesh) => {
+                if (mesh.isMesh && mesh.material) {
+                  if (mesh.material.emissive) {
+                    mesh.userData.originalEmissive =
+                      mesh.userData.originalEmissive ||
+                      mesh.material.emissive.clone();
+                  }
+                  mesh.castShadow = true;
+                  mesh.receiveShadow = true;
+                  mesh.geometry.computeVertexNormals();
+                }
               });
-
-              // Abilita le ombre sugli oggetti
-              child.castShadow = true;
-              child.receiveShadow = true;
-
-              // Se gli oggetti hanno fori, renderizza entrambi i lati
-              child.geometry.computeVertexNormals();
-
-              objects.push(child);
             }
           });
-          objectsRef.current = objects;
-
-          scene.add(obj);
+          objectsRef.current = vaseGroups;
+          scene.add(model);
         },
-        undefined,
+        (progress) => {
+          console.log(
+            "Loading progress:",
+            (progress.loaded / progress.total) * 100 + "%"
+          );
+        },
         (error) => {
           console.error("Errore nel caricamento del modello:", error);
         }
       );
 
-      // Animazione
+      // Loop di animazione
       const animate = () => {
         requestAnimationFrame(animate);
         controls.update();
         renderer.render(scene, camera);
         updateCurrentObject();
-
-        // Aggiorna l'helper della luce spot
-        spotLightHelper.update();
+        if (spotLightHelper) spotLightHelper.update();
       };
-
-      // Inizia l'animazione
       animate();
-      // Cleanup
     };
     init();
     return () => {
-      renderer.dispose();
-      scene.clear();
+      if (renderer) renderer.dispose();
+      if (scene) scene.clear();
       objectsRef.current = [];
-      // gui.destroy();
     };
   }, []);
 
@@ -335,14 +353,20 @@ const SecondSection = ({ secondSectionRef, scrollToTop }) => {
                 <p className="font-semibold text-left lg:text-base md:text-base sm:text-base text-base leading-4">
                   dimensions:
                 </p>
-                {currentInfo.dimensions.map((dim, index) => (
-                  <p
-                    key={index}
-                    className="text-left lg:text-base md:text-base sm:text-base text-base leading-4"
-                  >
-                    {dim}
+                {Array.isArray(currentInfo.dimensions) ? (
+                  currentInfo.dimensions.map((dim, index) => (
+                    <p
+                      key={index}
+                      className="text-left lg:text-base md:text-base sm:text-base text-base leading-4"
+                    >
+                      {dim}
+                    </p>
+                  ))
+                ) : (
+                  <p className="text-left lg:text-base md:text-base sm:text-base text-base leading-4">
+                    {currentInfo.dimensions || "N/A"}
                   </p>
-                ))}
+                )}
               </div>
               <div>
                 <p className="font-semibold text-left lg:text-base md:text-base sm:text-base text-base leading-4">
