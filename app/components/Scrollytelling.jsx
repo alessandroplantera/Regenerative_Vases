@@ -138,7 +138,7 @@ const Scrollytelling = () => {
             <div
               className="infoWrapperAbout 
             w-fit mx-auto 
-            mt-10 lg:mt-20 md:mt-20 sm:mt-20
+            mt-5 lg:mt-20 md:mt-20 sm:mt-20
             text-blandoBlue "
             >
               <p

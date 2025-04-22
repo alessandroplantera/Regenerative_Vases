@@ -132,7 +132,7 @@ const Header = forwardRef(
         )}
         <video
           ref={videoRef}
-          src="https://res.cloudinary.com/dpzluyel4/video/upload/q_auto:eco/v1733417740/input_aktxqa.mp4"
+          src="/videos/input.mp4"
           autoPlay
           loop
           preload="auto"
