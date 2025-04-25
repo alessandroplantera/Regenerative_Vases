@@ -212,6 +212,8 @@ const SecondSection = ({ secondSectionRef, scrollToTop }) => {
           });
           objectsRef.current = vaseGroups;
           scene.add(model);
+          // segnala che il .glb è caricato
+          window.dispatchEvent(new Event("gltfLoaded"));
         },
         (progress) => {
           console.log(

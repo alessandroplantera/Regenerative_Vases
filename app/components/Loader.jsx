@@ -3,9 +3,17 @@
 import React, { useEffect, useState } from "react";
 
 const Loader = ({ videoRef }) => {
+  const [gltfLoaded, setGltfLoaded] = useState(false);
   const [progress, setProgress] = useState(0);
   const [isLoaded, setIsLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
+
+  // ascolta evento gltfLoaded
+  useEffect(() => {
+    const onGltf = () => setGltfLoaded(true);
+    window.addEventListener("gltfLoaded", onGltf);
+    return () => window.removeEventListener("gltfLoaded", onGltf);
+  }, []);
 
   useEffect(() => {
     if (!videoRef?.current) {
@@ -42,7 +50,8 @@ const Loader = ({ videoRef }) => {
     videoElement.addEventListener("error", handleError);
 
     // Controllo iniziale nel caso in cui il video sia già caricato
-    if (videoElement.readyState >= 4) { // HAVE_CAN_PLAY_THROUGH
+    if (videoElement.readyState >= 4) {
+      // HAVE_CAN_PLAY_THROUGH
       handleCanPlayThrough();
     }
 
@@ -53,7 +62,8 @@ const Loader = ({ videoRef }) => {
     };
   }, [videoRef]);
 
-  if (isLoaded) {
+  // mostra Loader finché video o .glb non sono entrambi pronti
+  if (isLoaded && gltfLoaded) {
     return null; // Rimuove il loader quando il video è caricato o se c'è stato un errore
   }
 

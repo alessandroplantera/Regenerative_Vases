@@ -21,6 +21,7 @@ const Header = forwardRef(
     const headerCenterTitleRef = useRef(null);
     const [isEffectActive, setIsEffectActive] = useState(false); // Stato per gestire l'effetto
     const [videoLoaded, setVideoLoaded] = useState(false); // Stato per il Loader
+    const [gltfLoaded, setGltfLoaded] = useState(false);
 
     // const text =
     //   "Interdisciplinary collaborative project of research, product design, communication and interaction curated by STUDIO BLANDO";
@@ -93,6 +94,12 @@ const Header = forwardRef(
       };
     }, []);
 
+    useEffect(() => {
+      const onGltfLoaded = () => setGltfLoaded(true);
+      window.addEventListener("gltfLoaded", onGltfLoaded);
+      return () => window.removeEventListener("gltfLoaded", onGltfLoaded);
+    }, []);
+
     // Riproduci il video e reimposta il frame corrente al montaggio
     useEffect(() => {
       const videoElement = videoRef.current;
@@ -141,7 +148,7 @@ const Header = forwardRef(
           className="absolute top-1/2 left-1/2 w-auto h-full transform -translate-x-1/2 scale-90 lg:scale-100 md:scale-100 -translate-y-1/2 object-cover"
         ></video>
         {/* Aggiungi il Loader */}
-        {!videoLoaded && <Loader videoRef={videoRef} />}
+        {!(videoLoaded && gltfLoaded) && <Loader videoRef={videoRef} />}
       </header>
     );
   }
