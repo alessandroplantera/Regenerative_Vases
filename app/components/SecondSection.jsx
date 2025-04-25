@@ -104,31 +104,52 @@ const SecondSection = ({ secondSectionRef, scrollToTop }) => {
 
       controls = new OrbitControls(camera, renderer.domElement);
       controls.enableDamping = true;
-      controls.enablePan = true;
+      controls.enablePan = false;
       controls.enableZoom = true;
       controls.autoRotate = true;
-      controls.autoRotateSpeed = 2;
+      controls.autoRotateSpeed = 1;
       controls.dampingFactor = 0.1;
       controls.maxDistance = 10;
-      controls.minDistance = 5;
+      controls.minDistance = isMobile ? 2 : 5;
+
+      // Imposta i limiti di rotazione orizzontale
+      controls.maxPolarAngle = Math.PI / 2; // Limita la rotazione a 90 gradi (non permette di vedere il sotto del modello)
+      controls.minPolarAngle = 0; // Limita la rotazione verso l'alto
 
       // --- Gestione dello zoom via wheel ---
       const onWheel = (event) => {
-        // Se la distanza è al minimo e l'utente scrolla in direzione opposta (zoom out)
-        if (zoomDisabled && event.deltaY > 0) {
-          controls.enableZoom = true;
-          zoomDisabled = false;
-          // Sposta leggermente la camera per aumentare la distanza dal target
-          const direction = new THREE.Vector3();
-          direction.subVectors(camera.position, controls.target).normalize();
-          camera.position.addScaledVector(direction, 0.5);
-          console.log(
-            "Zoom riabilitato per scroll outwards, camera spostata:",
-            camera.position
-          );
+        if (zoomDisabled) {
+          const distance = camera.position.distanceTo(controls.target);
+          if (event.deltaY > 0 && distance <= controls.minDistance + 0.1) {
+            controls.enableZoom = true;
+            zoomDisabled = false;
+            // Slightly move camera outward
+            const dir = new THREE.Vector3()
+              .subVectors(camera.position, controls.target)
+              .normalize();
+            camera.position.addScaledVector(dir, 0.5);
+            console.log(
+              "Zoom riabilitato per scroll outwards, camera spostata:",
+              camera.position
+            );
+          } else if (
+            event.deltaY < 0 &&
+            distance >= controls.maxDistance - 0.1
+          ) {
+            controls.enableZoom = true;
+            zoomDisabled = false;
+            // Slightly move camera inward
+            const dirIn = new THREE.Vector3()
+              .subVectors(camera.position, controls.target)
+              .normalize();
+            camera.position.addScaledVector(dirIn, -0.5);
+            console.log(
+              "Zoom riabilitato per scroll inwards, camera spostata:",
+              camera.position
+            );
+          }
         }
         checkZoomAndDisable();
-        // Se lo zoom è disabilitato, non bloccare l'evento per permettere lo scroll della pagina
         if (zoomDisabled) return;
         event.preventDefault();
       };
@@ -139,11 +160,19 @@ const SecondSection = ({ secondSectionRef, scrollToTop }) => {
       // Funzione per controllare la distanza della camera
       const checkZoomAndDisable = () => {
         const distance = camera.position.distanceTo(controls.target);
-        if (distance <= controls.minDistance + 0.1 && !zoomDisabled) {
+        if (
+          (distance <= controls.minDistance + 0.1 ||
+            distance >= controls.maxDistance - 0.1) &&
+          !zoomDisabled
+        ) {
           controls.enableZoom = false;
           zoomDisabled = true;
-          console.log("Zoom disabilitato, attivo scroll");
-        } else if (distance > controls.minDistance + 0.1 && zoomDisabled) {
+          console.log("Zoom disabilitato, attivo scroll, distance:", distance);
+        } else if (
+          distance > controls.minDistance + 0.1 &&
+          distance < controls.maxDistance - 0.1 &&
+          zoomDisabled
+        ) {
           controls.enableZoom = true;
           zoomDisabled = false;
           console.log("Zoom riabilitato per distanza");
@@ -391,6 +420,16 @@ const SecondSection = ({ secondSectionRef, scrollToTop }) => {
                 Download Catalogue
               </p>
             </div>
+          </div>
+          <div>
+            <a
+              href="#top"
+              onClick={scrollToTop}
+              className="absolute z-50 bottom-5 translate-x-[-50%] text-center mb-1 text-md md:text-md sm:text-md text-blandoBlue underline-offset-4 underline"
+            >
+              {" "}
+              Go to Top
+            </a>
           </div>
         </>
       ) : (

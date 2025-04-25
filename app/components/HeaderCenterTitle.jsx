@@ -21,7 +21,7 @@ const HeaderCenterTitle = ({
     >
       <h2
         id="header-main-title"
-        className={`font-ppregular leading-[3rem] ${
+        className={`font-ppregular leading-[2.5rem] ${
           fontSizeTitle && isTailwindClass(fontSizeTitle) ? fontSizeTitle : ""
         }`}
         style={
@@ -34,7 +34,7 @@ const HeaderCenterTitle = ({
       </h2>
       <p
         id="header-year"
-        className={`mt-3 ${
+        className={`mt-4 ${
           fontSizeYear && isTailwindClass(fontSizeYear) ? fontSizeYear : ""
         }`}
         style={

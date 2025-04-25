@@ -52,17 +52,23 @@ const Scrollytelling = () => {
     setIsLoaded(true); // Aggiorna lo stato quando il video è caricato
   };
 
+  const scrollToTop = () => {
+    if (headerRef.current) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
   return (
     <div>
       <Banner />
-      <div className="absolute top-10 left-0 w-full h-16 flex items-center justify-between px-3 md:px-4 lg:px-4 my-5 z-10 sm:text-xs md:text-s">
+      <div className="absolute top-5 left-0 w-full h-16 flex items-center justify-between px-3 md:px-4 lg:px-4 my-0 lg:my-5 md:my-5 sm:my-0 z-10 sm:text-xs md:text-s">
         {/* Elemento a sinistra (può essere vuoto o contenere un logo) */}
         <div className="text-blandoBlue flex flex-col text-left">
           <ContactInfoToggle />
         </div>
         {/* Link "About" all'estrema destra */}
         <a
-          className="text-blandoBlue underline lg:text-base md:text-base sm:text-base"
+          className="text-blandoBlue underline text-sm lg:text-base md:text-base sm:text-sm"
           onClick={() => setShowAbout(true)}
         >
           About
@@ -89,7 +95,7 @@ const Scrollytelling = () => {
       <div ref={secondSectionRef} className="second-section">
         <SecondSection
           secondSectionRef={secondSectionRef}
-          // scrollToTop={scrollToTop} // Passa la funzione
+          scrollToTop={scrollToTop}
         />
       </div>
 
@@ -103,7 +109,7 @@ const Scrollytelling = () => {
         bg-black bg-opacity-50 
         flex flex-col 
         items-center justify-center
-        z-50 "
+        z-20 "
         >
           <div
             className="
@@ -113,14 +119,14 @@ const Scrollytelling = () => {
           >
             <button
               onClick={() => setShowAbout(false)}
-              className="absolute 
-              top-4 lg:top-10 md:top-10 sm:top-10 
-              right-5 lg:right-20 md:right-20 sm:right-20 "
+              className="absolute z-20
+              top-10 lg:top-20 md:top-10 sm:top-10 
+              right-5 lg:right-5 md:right-20 sm:right-20 underline
+              text-blandoBlue text-sm lg:text-base md:text-base sm:text-base"
             >
               Close
             </button>
           </div>
-
           <div
             className="fixed flex flex-col items-center justify-top h-full 
           w-[80%] md:w-[40%] sm:w-[40%] 
