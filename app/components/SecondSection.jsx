@@ -22,21 +22,21 @@ const SecondSection = ({ secondSectionRef, scrollToTop }) => {
       name: "A.0528.20",
       dimensions: ["Mouth ø 18cm", "Mouth h 15cm", "Vase h 20cm"],
       weight: "13kg",
-      position: "N45.88060418116533 E8.95080618178338",
+      position: "45.881638613252825, 8.950580892144522",
     },
     {
       id: "vase2",
       name: "P.1246.25",
-      dimensions: ["Mouth ø 18cm", "Mouth h 15cm", "Vase h 20cm"],
+      dimensions: ["Mouth ø 23cm", "Mouth h 20cm", "Vase h 25cm"],
       weight: "20kg",
-      position: "N46.88060418116533 E8.95080618178338",
+      position: "46.43065064112329, 8.596217672936003",
     },
     {
       id: "vase3",
       name: "C.0863.32",
-      dimensions: ["Mouth ø 18cm", "Mouth h 15cm", "Vase h 20cm"],
+      dimensions: ["Mouth ø 28cm", "Mouth h 27cm", "Vase h 32cm"],
       weight: "30kg",
-      position: "N47.88060418116533 E8.95080618178338",
+      position: "46.295256614484764, 9.113432229580873",
     },
   ];
   const vaseDataMap = new Map();
