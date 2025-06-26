@@ -52,14 +52,14 @@ The **visual identity** incorporates datamoshing as a metaphor for destruction a
 **Operational Support & Project Coordination**  
 🧩 _Serena Cangiano_
 
-**Visual & Concept Development**  
+**Concept & Digital Design**  
 🎨 _Alice Mioni_  
 🎨 _Alessandro Plantera_
 
 **Photography & Video**  
 📷 _Sophie Sprugasci_
 
-**Landing Page & Digital Design**  
+**Tech Development**  
 💻 _Alessandro Plantera_
 
 > This repository contains only the front-end code for the landing page.
