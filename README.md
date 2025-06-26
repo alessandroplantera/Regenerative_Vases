@@ -29,18 +29,18 @@ This repository contains the **landing page** developed to communicate the proje
 - Introduce the concept and values of ReGenerative Vases
 - Present photos and visuals of the final objects
 - Communicate the sustainability-driven approach and fabrication process
-- Set the stage for future interactions via the co-design platform
 
-The **visual identity** is clean, modular, and organic—echoing the project's emphasis on **evolution**, **material expression**, and **algorithmic beauty**.
+The **visual identity** incorporates datamoshing as a metaphor for destruction and re-creation—reflecting the project's emphasis on **evolution**, **material transformation**, and **the generative beauty of process**.
 
 ---
 
-## 🧱 Tech Stack
+## 🧱 Landing Page & Visual Identity — Tech Stack
 
 - **Next.js** – Web framework for React
 - **Tailwind CSS** – Utility-first styling
 - **Vercel** – Hosting and deployment
-- _(Add other tools if used)_
+- **TouchDesigner** - Visual Production
+- **Figma** - Digital Prototyping
 
 ---
 
@@ -73,6 +73,7 @@ The **visual identity** is clean, modular, and organic—echoing the project's e
 ---
 
 ## 📄 License
+
 All rights reserved.  
 This code and design are the property of the collaborators of the ReGenerative Vases project.  
-No reproduction, modification, or commercial use is permitted without explicit written consent.  
+No reproduction, modification, or commercial use is permitted without explicit written consent.
