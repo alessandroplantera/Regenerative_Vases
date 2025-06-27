@@ -418,7 +418,7 @@ const SecondSection = ({ secondSectionRef, scrollToTop }) => {
                 e.currentTarget.style.color = "var(--blandoBlue)";
               }}
             >
-              <p className="text-center mb-1 text-2xl md:text-2xl sm:text-2xl text-nowrap">
+              <p className="text-center mb-1 lg:text-2xl md:text-xl sm:text-xl text-nowrap">
                 Download Catalogue
               </p>
             </div>

@@ -142,14 +142,16 @@ const Header = forwardRef(
         )}
         <video
           ref={videoRef}
-          src="/videos/REGENERATIVE_imgSequence_1280_1.mp4"
           autoPlay
           loop
           preload="auto"
           playsInline
           muted
-          className="absolute top-1/2 left-1/2 w-auto h-full transform -translate-x-1/2 scale-90 lg:scale-100 md:scale-100 -translate-y-1/2 object-cover"
-        ></video>
+          className="absolute top-1/2 left-1/2 md:w-full lg:w-full sm:h-full transform -translate-x-1/2 scale-90 lg:scale-100 md:scale-100 -translate-y-1/2 object-cover"
+        >
+          <source src="/videos/horizontal.mp4" type="video/mp4;" />
+          {/* Il browser non supporta il video */}
+        </video>
         {/* Aggiungi il Loader */}
         {!(videoLoaded && gltfLoaded) && <Loader videoRef={videoRef} />}
       </header>
