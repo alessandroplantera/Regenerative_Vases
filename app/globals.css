@@ -12,6 +12,31 @@
   --font-ppregular: var(--font-pp-regular), sans-serif;
   font-size: 18px;
 }
+/* Webkit-based browsers (Chrome, Edge, Safari) */
+::-webkit-scrollbar {
+  width: 4px; /* Larghezza della barra di scorrimento */
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--blandoBlue); /* blandoBlue trasparente */
+  border-radius: 6px;
+  transition: background-color 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--blandoBlue);
+}
+
+/* Firefox */
+* {
+  scrollbar-width: 4px;
+  scrollbar-color: var(--blandoBlue) transparent; /* blandoBlue trasparente */
+}
+
 html {
   /* font-size: 18px; */
   background: var(--background);

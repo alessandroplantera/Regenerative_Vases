@@ -339,7 +339,7 @@ const SecondSection = ({ secondSectionRef, scrollToTop }) => {
   }, []);
 
   return (
-    <section className="relative w-screen h-screen bg-background overflow-hidden flex justify-center items-center z-0">
+    <section className="relative w-full h-screen bg-background overflow-hidden flex justify-center items-center z-0">
       <div className="absolute inset-0 w-full h-full z-20">
         <canvas
           ref={canvasRef}

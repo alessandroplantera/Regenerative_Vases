@@ -15,7 +15,7 @@ const HeaderCenterTitle = ({
   return (
     <div
       id="header-center-title"
-      className={`flex flex-col items-center w-screen justify-center text-center z-10 transition-opacity duration-500 ${
+      className={`flex flex-col items-center w-full justify-center text-center z-10 transition-opacity duration-500 ${
         show ? "opacity-100" : "opacity-0"
       }`}
     >

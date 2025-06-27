@@ -117,7 +117,10 @@ const Header = forwardRef(
     }, [setCurrentFrame]);
 
     return (
-      <header ref={ref} className="relative w-screen h-screen bg-background">
+      <header
+        ref={ref}
+        className="relative w-full h-screen bg-background overflow-hidden"
+      >
         <div className="absolute w-full left-1/2 transform -translate-x-1/2 top-1/2 -translate-y-1/2 z-10">
           {/* Titolo centrato */}
           <HeaderCenterTitle />
@@ -131,7 +134,7 @@ const Header = forwardRef(
             className="absolute pointer-events-none text-green-500 font-bold"
             style={{
               top: cursorPosition.y + 20, // Offset verticale
-              left: cursorPosition.x + 20, // Offset orizzontale
+              left: cursorPosition.x + 20, // Offset p
             }}
           >
             {words[currentWordIndex]}

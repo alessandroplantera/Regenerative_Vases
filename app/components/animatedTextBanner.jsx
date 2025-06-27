@@ -5,7 +5,7 @@ import Marquee from "react-fast-marquee";
 
 const Banner = () => {
   return (
-    <div className="fixed z-50 top-0 left-0 lg:h-15 md:h-15 sm:h-15 bg-background border-b-[1px] border-blandoBlue flex items-center">
+    <div className="fixed z-50 top-0 left-0 w-full lg:h-15 md:h-15 sm:h-15 bg-background border-b-[1px] border-blandoBlue flex items-center">
       <Marquee
         gradient={false}
         speed={100} // Regola la velocità come preferisci

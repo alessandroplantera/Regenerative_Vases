@@ -8,6 +8,7 @@ import SecondSection from "./SecondSection";
 import HeaderCenterTitle from "./HeaderCenterTitle";
 import ContactInfoToggle from "./ContactInfoToggle"; // Assicurati che il percorso sia corretto
 import Banner from "./animatedTextBanner";
+import AboutOverlay from "./AboutOverlay";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -100,111 +101,7 @@ const Scrollytelling = () => {
       </div>
 
       {/* Overlay About */}
-      {showAbout && (
-        <div
-          className="
-        fixed inset-0 
-        overflow-y-scroll
-        w-full h-full min-h-screen 
-        bg-black bg-opacity-50 
-        flex flex-col 
-        items-center justify-center
-        z-20 "
-        >
-          <div
-            className="
-          relative w-full h-full max-h-screen 
-          bg-background 
-          pl-4 md:pl-10 pr-4 md:pr-10 pt-4 md:pt-10 "
-          >
-            <button
-              onClick={() => setShowAbout(false)}
-              className="absolute z-20
-              top-10 lg:top-20 md:top-10 sm:top-10 
-              right-5 lg:right-5 md:right-20 sm:right-20 underline
-              text-blandoBlue text-sm lg:text-base md:text-base sm:text-base"
-            >
-              Close
-            </button>
-          </div>
-          <div
-            className="fixed flex flex-col items-center justify-top h-full 
-          w-[80%] md:w-[40%] sm:w-[40%] 
-          text-center 
-          mt-[10rem] md:mt-[10rem] sd:mt-[10rem]"
-          >
-            {/* Titolo centrato */}
-            <HeaderCenterTitle
-              title="(re)generative vases"
-              year="2024"
-              fontSizeTitle="text-4xl lg:text-8xl md:text-8xl sm:text-7xl  leading-[1rem] lg:leading-[4rem] md:leading-[4rem] sm:leading-[4rem]"
-              fontSizeYear=" text-3xl lg:text-7xl md:text-7xl sm:text-5xl leading-[1rem] lg:leading-[4rem] md:leading-[4rem] sm:leading-[4rem]"
-              show={true}
-            />
-            <div
-              className="infoWrapperAbout 
-            w-fit mx-auto 
-            mt-5 lg:mt-20 md:mt-20 sm:mt-20
-            text-blandoBlue "
-            >
-              <p
-                className="
-              leading-7 lg:leading-8 md:leading-6 sm:leading-5
-              text-[1.7rem] lg:text-3xl md:text-3xl sm:text-3xl mb-5 lg:mb-10 md:mb-10 sm:mb-10 text-wrap"
-              >
-                An interdisciplinary collaborative project on digital
-                materiality and recycled territories.
-              </p>
-              <div
-                className="
-              infoAboutPeople flex flex-col 
-              leading-4 lg:leading-6 md:leading-4 sm:leading-4 
-              text-base lg:text-xl md:text-xl sm:text-xl 
-              gap-3 lg:gap-5 md:gap-5 sm:gap-5 "
-              >
-                <div className="infoAboutVases">
-                  <p>Vases by:</p>
-                  <a href="" className="underline">
-                    Sofia Petraglio
-                  </a>
-                </div>
-                <div className="infoAboutDesign">
-                  <p>Visual and Interactive Design by:</p>
-                  <a href="" className="underline">
-                    Alice Mioni
-                  </a>
-                  <p></p>
-                  <a href="" className="underline">
-                    Alessandro Plantera
-                  </a>
-                </div>
-                <div className="infoAboutPhotography">
-                  <p>Visual Design and photography by:</p>
-                  <a href="" className="underline">
-                    Sophie Sprugasci
-                  </a>
-                </div>
-              </div>
-              <div className="mt-10 wrapperFooter text-left absolute bottom-[7rem] w-full">
-                <hr className="border-t border-blandoBlue w-full my-4" />
-                <div className="relative logos flex flex-row justify-between">
-                  <div className="studioBlandoLogo space-y-2">
-                    <p>Developed by:</p>
-                    <img src="studioblando.svg" alt="Studio Blando" />
-                  </div>
-                  <div className="sponsor space-y-2">
-                    <p>In collaboration with:</p>
-                    <img
-                      src="cristallina.png"
-                      alt="Cristallina The Swiss Marble"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      {showAbout && <AboutOverlay onClose={() => setShowAbout(false)} />}
     </div>
   );
 };

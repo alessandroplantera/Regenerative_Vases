@@ -2,7 +2,7 @@
 
 const SecondSection = () => {
   return (
-    <section className="relative w-screen h-screen bg-gray-200 overflow-hidden flex justify-center items-center">
+    <section className="relative w-full h-screen bg-gray-200 overflow-hidden flex justify-center items-center">
       <h2 className="text-3xl font-bold" style={{ color: "black" }}>
         Benvenuto nella Seconda Sezione! kitemmù
       </h2>
